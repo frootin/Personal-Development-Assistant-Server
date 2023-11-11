@@ -1,17 +1,14 @@
 # Personal-Development-Assistant-Server
 ## Инструкция по запуску сервера
 ### Скомпилируйте приложение
-1. Убедитесь, что у вас установлены: Java 18, Tomcat 9, Maven 3.
+1. Убедитесь, что у вас установлены: Java 17, Tomcat 9, Maven 3.
 2. Перейдите в папку source/tomcat.
 3. Из этой папки запустите:
 ```
-mvn package
-```
-4. Проверьте, что существует файл source/tomcat/target/assistant.war.
-5. Если по каким-то причинам вам нужно перекомпилировать уже существующий файл, то:
-```
 mvn clean package
 ```
+4. Проверьте, что существует файл source/tomcat/target/assistant.war.
+
 ### Запустите сервер Tomcat у себя на машине:
 ```
 catalina.bat start
@@ -42,4 +39,4 @@ catalina.bat stop
 * Адрес приложения: http://localhost:8080/assistant
 * Адрес для информации по задаче: http://localhost:8080/assistant/task
 * Адрес для информации за сегодня: http://localhost:8080/assistant/today
-* Адрес для информации по календарный день: http://localhost:8080/assistant/day
+* Адрес для информации за календарный день: http://localhost:8080/assistant/day
