@@ -20,7 +20,6 @@ public class TaskServlet extends HttpServlet {
                 "12:25","12:55", "Учёба", "#32a852", 1, "Не повторяется", 0);
         String taskJsonString = this.gson.toJson(task);
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         out.print(taskJsonString);
         out.flush();

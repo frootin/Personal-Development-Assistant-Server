@@ -39,7 +39,6 @@ public class TodayScreenServlet extends HttpServlet {
 
         String taskJsonString = this.gson.toJson(todayScreen);
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         out.print(taskJsonString);
         out.flush();
