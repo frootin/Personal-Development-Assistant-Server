@@ -1,14 +1,22 @@
 package ru.sfu.objects;
 
+import ru.sfu.annotations.Exclude;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class StudyClass {
     private String name;
-    private String time;
+    @SerializedName("start_time")
+    private String startTime;
+    @SerializedName("stop_time")
+    private String stopTime;
     private String place;
     private String format;
 
-    public StudyClass(String name, String time, String place, String format) {
+    public StudyClass(String name, String startTime, String stopTime, String place, String format) {
         this.name = name;
-        this.time = time;
+        this.startTime = startTime;
+        this.stopTime = stopTime;
         this.place = place;
         this.format = format;
     }
@@ -21,12 +29,20 @@ public class StudyClass {
         this.name = name;
     }
 
-    public String getTime() {
-        return time;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartTime(String time) {
+        this.startTime = startTime;
+    }
+
+    public String getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(String time) {
+        this.stopTime = stopTime;
     }
 
     public String getPlace() {

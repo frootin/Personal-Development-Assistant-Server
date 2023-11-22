@@ -8,58 +8,35 @@ import java.util.List;
 
 public class Home {
     @Expose
-    @SerializedName("today_tasks")
-    private List<Task> todayTasks;
-    @SerializedName("free_tasks")
-    private List<Task> freeTasks;
-    @SerializedName("late_tasks")
-    private List<Task> lateTasks;
+    @SerializedName("tasks")
+    private List<Task> tasks;
     private String day;
     @SerializedName("text_note")
     private String textNote;
-    @SerializedName("classes")
-    private List<StudyClass> studyClasses;
-    private List<Task> tasks;
+    @SerializedName("yesterday_classes")
+    private List<StudyClass> yesterdayStudyClasses;
+    @SerializedName("today_classes")
+    private List<StudyClass> todayStudyClasses;
+    @SerializedName("tomorrow_classes")
+    private List<StudyClass> tomorrowStudyClasses;
 
-    public Home(List<Task> todayTasks, List<Task> freeTasks, List<Task> lateTasks, String day, String textNote, List<StudyClass> studyClasses) {
-        this.todayTasks = todayTasks;
-        this.freeTasks = freeTasks;
-        this.lateTasks = lateTasks;
-        this.day = day;
-        this.textNote = textNote;
-        this.studyClasses = studyClasses;
-    }
-
-    public Home(List<Task> tasks,String day, String textNote, List<StudyClass> studyClasses) {
+    public Home(List<Task> tasks, String day, String textNote, List<StudyClass> yesterdayStudyClasses, List<StudyClass> todayStudyClasses, List<StudyClass> tomorrowStudyClasses) {
         this.tasks = tasks;
         this.day = day;
         this.textNote = textNote;
-        this.studyClasses = studyClasses;
+        this.yesterdayStudyClasses = yesterdayStudyClasses;
+        this.todayStudyClasses = todayStudyClasses;
+        this.tomorrowStudyClasses = tomorrowStudyClasses;
     }
 
-    public List<Task> getTodayTasks() {
-        return todayTasks;
-    }
-
-    public void setTodayTasks(List<Task> todayTasks) {
-        this.todayTasks = todayTasks;
-    }
-
-    public List<Task> getFreeTasks() {
-        return freeTasks;
-    }
-
-    public void setFreeTasks(List<Task> freeTasks) {
-        this.freeTasks = freeTasks;
-    }
-
-    public List<Task> getLateTasks() {
-        return lateTasks;
-    }
-
-    public void setLateTasks(List<Task> lateTasks) {
-        this.lateTasks = lateTasks;
-    }
+//    public Home(List<Task> tasks, String day, String textNote, List<StudyClass> yesterdayStudyClasses, List<StudyClass> todayStudyClasses, List<StudyClass> tomorrowStudyClasses) {
+//        this.tasks = tasks;
+//        this.day = day;
+//        this.textNote = textNote;
+//        this.yesterdayStudyClasses = yesterdayStudyClasses;
+//        this.todayStudyClasses = todayStudyClasses;
+//        this.tomorrowStudyClasses = tomorrowStudyClasses;
+//    }
 
     public String getDay() {
         return day;
@@ -77,12 +54,27 @@ public class Home {
         this.textNote = textNote;
     }
 
-    public List<StudyClass> getStudyClasses() {
-        return studyClasses;
+    public List<StudyClass> getTodayStudyClasses() {
+        return todayStudyClasses;
     }
 
-    public void setStudyClasses(List<StudyClass> studyClasses) {
-        this.studyClasses = studyClasses;
+    public void setTodayStudyClasses(List<StudyClass> todayStudyClasses) {
+        this.todayStudyClasses = todayStudyClasses;
+    }
+
+    public List<StudyClass> getYesterdayStudyClasses() {
+        return yesterdayStudyClasses;
+    }
+
+    public void setYesterdayStudyClasses(List<StudyClass> yesterdayStudyClasses) {
+        this.yesterdayStudyClasses = yesterdayStudyClasses;
+    }
+    public List<StudyClass> getTomorrowStudyClasses() {
+        return tomorrowStudyClasses;
+    }
+
+    public void setTomorrowStudyClasses(List<StudyClass> tomorrowStudyClasses) {
+        this.tomorrowStudyClasses = tomorrowStudyClasses;
     }
 
     public List<Task> getTasks() {
