@@ -40,8 +40,16 @@ public class HomeJsonFormatter {
 
     public static List<TaskDto> getTaskDtoForHomeScreen(List<Task> tasks) {
         List<TaskDto> tasksDto = new ArrayList<>();
+        String timeStart = null;
+        String timeStop = null;
         for (Task task: tasks) {
-            tasksDto.add(new TaskDto(task.getId(), task.getName(), String.valueOf(task.getTimeStart()), String.valueOf(task.getTimeStop()), task.getStatus()));
+            if (task.getTimeStart() != null) {
+                timeStart = task.getTimeStart().toString();
+            }
+            if (task.getTimeStop() != null) {
+                timeStop = task.getTimeStop().toString();
+            }
+            tasksDto.add(new TaskDto(task.getId(), task.getName(), timeStart, timeStop, task.getStatus()));
         }
         return tasksDto;
     }
