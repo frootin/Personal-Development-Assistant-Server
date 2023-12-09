@@ -1,10 +1,13 @@
 package ru.sfu.strategies;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
+//import com.google.gson.ExclusionStrategy;
+//import com.google.gson.FieldAttributes;
 import ru.sfu.annotations.Exclude;
 
-public class ExcludeAnnotationStrategy implements ExclusionStrategy {
+public class ExcludeAnnotationStrategy {
+}
+
+/*public class ExcludeAnnotationStrategy implements ExclusionStrategy {
     private String endOfName;
 
     public ExcludeAnnotationStrategy(String endOfName) {
@@ -21,3 +24,4 @@ public class ExcludeAnnotationStrategy implements ExclusionStrategy {
         return field.getName().endsWith(endOfName) || field.getAnnotation(Exclude.class) != null;
     }
 }
+*/

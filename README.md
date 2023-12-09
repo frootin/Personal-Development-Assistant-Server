@@ -1,42 +1,35 @@
 # Personal-Development-Assistant-Server
 ## Инструкция по запуску сервера
-### Скомпилируйте приложение
+### Разверните базу данных
+1. Запустите cmd из папки source/tomcat.
+2. Для задания кодировки выполните:
+```
+set PGCLIENTENCODING=UTF8
+```
+3. Для создания БД:
+```
+psql -U postgres -h localhost -p 5432 -f scripts/create_db.sql
+```
+4. Для заполнения БД:
+```
+psql -U postgres -h localhost -p 5432 -f scripts/manual_pop.sql
+```
+5. Если понадобится очистить БД (например, при смене схемы), то:
+```
+psql -U postgres -h localhost -p 5432 -f scripts/drop_db.sql
+```
+### Запустите приложение
 1. Убедитесь, что у вас установлены: Java 17, Tomcat 9, Maven 3.
 2. Перейдите в папку source/tomcat.
-3. Из этой папки запустите:
+3. Если пароль пользователя postgres отличается от qwerty, то в файле src/main/resources/application.properties отредактируйте:
 ```
-mvn clean package
+spring.datasource.password=вашпароль
 ```
-4. Проверьте, что существует файл source/tomcat/target/assistant.war.
-
-### Запустите сервер Tomcat у себя на машине:
+4. Из этой папки запустите:
 ```
-catalina.bat start
-```
-Предполагается, что сервер Tomcat 9 уже настроен.
-### Откройте стартовую страницу Tomcat
-Перейдите на: http://localhost:8080
-### Разверните приложение
-1. Откройте графический менеджер приложений (кнопка Manager App)
-![Alt text](/instruction-images/1.png)
-2. В появившемся всплывающем окне введите логин и пароль из файла ваш-путь-к-tomcat/conf/tomcat-users.xml. Пользователи определены в конце файла, найдите пользователя с ролью "manager-gui".
-3. Если приложение не устанавливалось ранее, то сразу перейти в раздел Развернуть -> WAR файл для развёртывания -> Выбор файла. Там выбрать файл source/tomcat/target/assistant.war:
-![Alt text](/instruction-images/2.png)
-4. После успешного выбора файла нажмите "Развернуть":
-![Alt text](/instruction-images/3.png)
-5. В списке приложений должно появиться "/assistant":
-![Alt text](/instruction-images/4.png)
-6. Если до этого была развёрнута старая версия приложения, то начать пункт 3 с её удаления (такая возможность должна быть в столбце "Команды"):
-![Alt text](/instruction-images/5.png)
-
-### Клиент может запрашивать данные с сервера!
-После завершения работы с сервером не забудьте:
-```
-catalina.bat stop
+mvn spring-boot:run
 ```
 
 ## Информация по адресам
 * Адрес приложения: http://localhost:8080/assistant
-* Адрес для информации по задаче: http://localhost:8080/assistant/task
-* Адрес для информации за сегодня: http://localhost:8080/assistant/today
-* Адрес для информации за календарный день: http://localhost:8080/assistant/day
+* Адрес для информации на 3 дня на главном экране: http://localhost:8080/assistant/api/home/{year}/{month}/{day}

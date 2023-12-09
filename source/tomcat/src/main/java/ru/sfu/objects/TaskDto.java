@@ -1,29 +1,35 @@
 package ru.sfu.objects;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+//import com.google.gson.annotations.SerializedName;
 import ru.sfu.annotations.Exclude;
 
-public class Task {
+public class TaskDto {
     private long id;
     private String name;
     @Exclude
     private String description;
     @Exclude
-    @SerializedName("start_date")
+    //@SerializedName("start_date")
+    @JsonProperty("start_date")
     private String startDate;
     @Exclude
-    @SerializedName("stop_date")
+    //@SerializedName("stop_date")
+    @JsonProperty("stop_date")
     private String stopDate;
-    @SerializedName("start_time")
+    //@SerializedName("start_time")
+    @JsonProperty("start_time")
     private String startTime;
-    @SerializedName("stop_time")
+    //@SerializedName("stop_time")
+    @JsonProperty("stop_time")
     private String stopTime;
     @Exclude
-    @SerializedName("category_name")
+    //@SerializedName("category_name")
+    @JsonProperty("category_name")
     private String categoryName;
     @Exclude
-    @SerializedName("category_color")
+    //@SerializedName("category_color")
+    @JsonProperty("category_color")
     private String categoryColor;
     @Exclude
     private int estimate;
@@ -35,7 +41,7 @@ public class Task {
         return id;
     }
 
-    public Task(long id, String name, String startTime, String stopTime, int status) {
+    public TaskDto(long id, String name, String startTime, String stopTime, int status) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -43,7 +49,7 @@ public class Task {
         this.status = status;
     }
 
-    public Task(long id, String name, String description, String startDate, String stopDate, String startTime, String stopTime, String categoryName, String categoryColor, int estimate, String repeat, int status) {
+    public TaskDto(long id, String name, String description, String startDate, String stopDate, String startTime, String stopTime, String categoryName, String categoryColor, int estimate, String repeat, int status) {
         this.id = id;
         this.name = name;
         this.description = description;

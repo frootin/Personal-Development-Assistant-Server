@@ -1,0 +1,81 @@
+package ru.sfu.db.models;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "tasks")
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User userId;
+    @Column(name = "task_name")
+    private String name;
+    @Column
+    private String details;
+    @Column
+    private int estimate;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category categoryId;
+    @Column(name = "date_start")
+    private LocalDate taskStart;
+    @Column(name = "date_end")
+    private LocalDate taskStop;
+    @Column(name = "time_start")
+    private LocalTime timeStart;
+    @Column(name = "time_end")
+    private LocalTime timeStop;
+    @Column(name="task_timezone")
+    private String timezone;
+    @Column
+    private int status;
+    @Column
+    private LocalDateTime doneBy;
+
+    public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate taskStart,
+                LocalDate taskStop, LocalTime timeStart, LocalTime timeStop, String timezone, int status, LocalDateTime doneBy) {
+        this.userId = userId;
+        this.name = name;
+        this.details = details;
+        this.estimate = estimate;
+        this.categoryId = categoryId;
+        this.taskStart = taskStart;
+        this.taskStop = taskStop;
+        this.timeStart = timeStart;
+        this.timeStop = timeStop;
+        this.timezone = timezone;
+        this.status = status;
+        this.doneBy = doneBy;
+    }
+
+    public Task(long id, String name, int status) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+    }
+
+    public Task(String name, String details, LocalDate taskStart, LocalDate taskStop, Category categoryId, String timezone, int estimate, LocalDateTime doneBy, int status) {
+        this.name = name;
+        this.details = details;
+        this.taskStart = taskStart;
+        this.taskStop = taskStop;
+        this.categoryId = categoryId;
+        this.timezone = timezone;
+        this.estimate = estimate;
+        this.doneBy = doneBy;
+        this.status = status;
+    }
+}
