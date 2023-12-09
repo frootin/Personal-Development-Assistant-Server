@@ -31,8 +31,8 @@ public class HomeJsonFormatter {
         List<TaskDto> doneTasks = getTaskDtoForHomeScreen(
                 taskRepository.findTaskByUserIdAndDoneByBetween(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX))
         );
-        List<StudyClass> studyClasses = Arrays.asList(new StudyClass("Инженерия требований", "14:10 - 15:45", "Корпус 17, 4-16", "Офлайн"),
-                new StudyClass("Серверное программирование", "15:55 - 17:30", "Корпус 17, 4-16", "Онлайн"));
+        List<StudyClass> studyClasses = Arrays.asList(new StudyClass("Инженерия требований", "14:10","15:45", "Корпус 17, 4-16", "Офлайн"),
+                new StudyClass("Серверное программирование", "15:55","17:30", "Корпус 17, 4-16", "Онлайн"));
         String dateAsString = date.toString();
         String textNote = "X-XXX-XXX-XX-XX";
         return new DayDto(fixedTasks, doneTasks, dateAsString, textNote, studyClasses);

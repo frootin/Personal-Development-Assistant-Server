@@ -1,14 +1,14 @@
 package ru.sfu.objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.sfu.annotations.Exclude;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+
 
 public class StudyClass {
     private String name;
-    @SerializedName("start_time")
+    @JsonProperty("start_time")
     private String startTime;
-    @SerializedName("stop_time")
+    @JsonProperty("stop_time")
     private String stopTime;
     private String place;
     private String format;
