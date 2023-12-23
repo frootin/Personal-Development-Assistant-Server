@@ -14,6 +14,7 @@ import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.HomeDto;
 import java.time.LocalDate;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class ApiController {
