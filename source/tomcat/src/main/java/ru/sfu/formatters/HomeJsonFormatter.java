@@ -1,5 +1,6 @@
 package ru.sfu.formatters;
 
+import org.modelmapper.ModelMapper;
 import ru.sfu.db.models.Task;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.TaskRepository;
@@ -15,19 +16,28 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HomeJsonFormatter {
+    public static <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+        ModelMapper modelMapper = new ModelMapper();
+        return source
+                .stream()
+                .map(element -> modelMapper.map(element, targetClass))
+                .collect(Collectors.toList());
+    }
+
     public static HomeDto getHomeDtoFromRepositories(TaskRepository taskRepository, User curUser, LocalDate centeredDate) {
         DayDto yesterday = getDayDtoFromRepositories(taskRepository, curUser, centeredDate.minusDays(1));
         DayDto today = getDayDtoFromRepositories(taskRepository, curUser, centeredDate);
         DayDto tomorrow = getDayDtoFromRepositories(taskRepository, curUser, centeredDate.plusDays(1));
-        List<TaskDto> freeTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndTaskStartIsNullAndTaskStopIsNull(curUser));
-        List<TaskDto> lateTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndDoneByIsNullAndTaskStopLessThan(curUser, centeredDate));
+        List<TaskDto> freeTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndStartDateIsNullAndStopDateIsNull(curUser));
+        List<TaskDto> lateTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndDoneByIsNullAndStopDateLessThan(curUser, centeredDate));
         return new HomeDto(yesterday, today, tomorrow, freeTasks, lateTasks);
     }
 
     public static DayDto getDayDtoFromRepositories(TaskRepository taskRepository, User user, LocalDate date) {
-        List<TaskDto> fixedTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndTaskStart(user, date));
+        List<TaskDto> fixedTasks = getTaskDtoForHomeScreen(taskRepository.findTaskByUserIdAndStartDate(user, date));
         List<TaskDto> doneTasks = getTaskDtoForHomeScreen(
                 taskRepository.findTaskByUserIdAndDoneByBetween(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX))
         );
@@ -39,17 +49,10 @@ public class HomeJsonFormatter {
     }
 
     public static List<TaskDto> getTaskDtoForHomeScreen(List<Task> tasks) {
+        ModelMapper modelMapper = new ModelMapper();
         List<TaskDto> tasksDto = new ArrayList<>();
-        String timeStart = null;
-        String timeStop = null;
         for (Task task: tasks) {
-            if (task.getTimeStart() != null) {
-                timeStart = task.getTimeStart().toString();
-            }
-            if (task.getTimeStop() != null) {
-                timeStop = task.getTimeStop().toString();
-            }
-            tasksDto.add(new TaskDto(task.getId(), task.getName(), timeStart, timeStop, task.getStatus()));
+            tasksDto.add(modelMapper.map(task, TaskDto.class));
         }
         return tasksDto;
     }

@@ -31,13 +31,13 @@ public class Task {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category categoryId;
     @Column(name = "date_start")
-    private LocalDate taskStart;
+    private LocalDate startDate;
     @Column(name = "date_end")
-    private LocalDate taskStop;
+    private LocalDate stopDate;
     @Column(name = "time_start")
-    private LocalTime timeStart;
+    private LocalTime startTime;
     @Column(name = "time_end")
-    private LocalTime timeStop;
+    private LocalTime stopTime;
     @Column(name="task_timezone")
     private String timezone;
     @Column
@@ -45,17 +45,17 @@ public class Task {
     @Column
     private LocalDateTime doneBy;
 
-    public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate taskStart,
-                LocalDate taskStop, LocalTime timeStart, LocalTime timeStop, String timezone, int status, LocalDateTime doneBy) {
+    public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
+                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy) {
         this.userId = userId;
         this.name = name;
         this.details = details;
         this.estimate = estimate;
         this.categoryId = categoryId;
-        this.taskStart = taskStart;
-        this.taskStop = taskStop;
-        this.timeStart = timeStart;
-        this.timeStop = timeStop;
+        this.startDate = startDate;
+        this.stopDate = stopDate;
+        this.startTime = startTime;
+        this.stopTime = stopTime;
         this.timezone = timezone;
         this.status = status;
         this.doneBy = doneBy;
@@ -67,11 +67,11 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String details, LocalDate taskStart, LocalDate taskStop, Category categoryId, String timezone, int estimate, LocalDateTime doneBy, int status) {
+    public Task(String name, String details, LocalDate startDate, LocalDate stopDate, Category categoryId, String timezone, int estimate, LocalDateTime doneBy, int status) {
         this.name = name;
         this.details = details;
-        this.taskStart = taskStart;
-        this.taskStop = taskStop;
+        this.startDate = startDate;
+        this.stopDate = stopDate;
         this.categoryId = categoryId;
         this.timezone = timezone;
         this.estimate = estimate;

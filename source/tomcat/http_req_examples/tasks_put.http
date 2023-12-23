@@ -1,0 +1,19 @@
+PUT http://localhost:8080/assistant/api/tasks
+Content-Type: application/json
+
+{
+  "id": 4,
+  "user_id": 1,
+  "name": "Купить подарки",
+  "description": "Зайти в книжный",
+  "estimate": 3,
+  "task_category": {
+    "id": 1
+  },
+  "start_date": "2023-12-11",
+  "stop_date": null,
+  "start_time": "11:11",
+  "stop_time": null,
+  "timezone": "Asia/Krasnoyarsk",
+  "status": 1
+}
