@@ -32,4 +32,5 @@ mvn spring-boot:run
 
 ## Информация по адресам
 * Адрес приложения: http://localhost:8080/assistant
-* Адрес для информации на 3 дня на главном экране: http://localhost:8080/assistant/api/home/{year}/{month}/{day}
+* Адрес для информации на 3 дня на главном экране: http://localhost:8080/assistant/api/{year}/{month}/{day}
+* Адрес для работы с задачами: http://localhost:8080/assistant/api/tasks (примеры запросов в source/tomcat/http_req_examples)
