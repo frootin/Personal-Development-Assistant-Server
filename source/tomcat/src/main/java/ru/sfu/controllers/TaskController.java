@@ -8,15 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Category;
 import ru.sfu.db.models.Task;
 import ru.sfu.db.repositories.CategoryRepository;
-import ru.sfu.db.repositories.TaskRepository;
 import ru.sfu.db.services.TaskService;
 import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.CategoryDto;
-import ru.sfu.objects.TaskDto;
 import ru.sfu.objects.TaskWindowDto;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {

@@ -14,5 +14,5 @@ Content-Type: application/json
   "start_time": "11:11",
   "stop_time": null,
   "timezone": "Asia/Krasnoyarsk",
-  "status": 1
+  "status": 0
 }

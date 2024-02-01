@@ -12,18 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DayDto {
-    //@SerializedName("fixed_tasks")
     @JsonProperty("fixed_tasks")
     private List<TaskDto> fixedTasks;
-    //@SerializedName("done_tasks")
     @JsonProperty("done_tasks")
     private List<TaskDto> doneTasks;
-    //@SerializedName("date")
     private String date;
-    //@SerializedName("text_note")
     @JsonProperty("text_note")
     private String textNote;
-    //@SerializedName("day_classes")
     @JsonProperty("day_classes")
     private List<StudyClass> studyClasses;
 }

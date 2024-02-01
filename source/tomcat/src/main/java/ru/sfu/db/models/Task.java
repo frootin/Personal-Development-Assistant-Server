@@ -23,9 +23,9 @@ public class Task {
     private User userId;
     @Column(name = "task_name")
     private String name;
-    @Column
+    @Column(name="details")
     private String details;
-    @Column
+    @Column(name="estimate")
     private int estimate;
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
@@ -38,11 +38,11 @@ public class Task {
     private LocalTime startTime;
     @Column(name = "time_end")
     private LocalTime stopTime;
-    @Column(name="task_timezone")
+    @Column(name = "task_timezone")
     private String timezone;
-    @Column
+    @Column(name = "status")
     private int status;
-    @Column
+    @Column(name = "done_by")
     private LocalDateTime doneBy;
 
     public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
