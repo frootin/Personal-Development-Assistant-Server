@@ -25,7 +25,7 @@ psql -U postgres -h localhost -p 5432 -f scripts/drop_db.sql
 ```
 spring.datasource.password=вашпароль
 ```
-4. Из этой папки запустите:
+4. Из папки source/tomcat запустите:
 ```
 mvn spring-boot:run
 ```

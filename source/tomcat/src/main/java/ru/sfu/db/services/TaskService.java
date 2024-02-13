@@ -1,15 +1,11 @@
 package ru.sfu.db.services;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.sfu.db.models.Task;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.TaskRepository;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,6 +14,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.sfu.exceptions.*;
 
 @Service
 public class TaskService {
@@ -39,12 +37,16 @@ public class TaskService {
         repository.save(task);
     }
 
-    public Task findById(long id) {
-        return repository.findById(id).orElse(null);
+    public Task findById(long id) throws NoSuchTaskException {
+        return repository.findById(id).orElseThrow(NoSuchTaskException::new);
     }
 
-    public void delete(long id) {
+    public void delete(long id) throws NoSuchTaskException {
         repository.delete(findById(id));
+    }
+
+    public List<Task> getTasksForUser(User user) {
+        return repository.findTaskByUserId(user);
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

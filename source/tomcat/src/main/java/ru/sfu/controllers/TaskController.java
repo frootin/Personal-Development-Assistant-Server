@@ -1,8 +1,6 @@
 package ru.sfu.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Category;
@@ -12,34 +10,32 @@ import ru.sfu.db.services.TaskService;
 import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.TaskWindowDto;
-
 import java.util.List;
+import ru.sfu.exceptions.*;
+import ru.sfu.db.services.UserService;
+import ru.sfu.util.*;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
     TaskService taskRepository;
+    UserService userService;
     CategoryRepository categoryRepository;
 
-    public TaskController(TaskService taskRepository, CategoryRepository categoryRepository) {
+    public TaskController(TaskService taskRepository, UserService userService, CategoryRepository categoryRepository) {
         this.taskRepository = taskRepository;
+        this.userService = userService;
         this.categoryRepository = categoryRepository;
     }
 
     @PostMapping
     public void createTask(@RequestBody JsonNode json) {
-        ObjectMapper jsonMapper = new ObjectMapper();
-        ModelMapper modelMapper = new ModelMapper();
-        try {
-            TaskWindowDto taskDto = jsonMapper.treeToValue(json, TaskWindowDto.class);
-            Task task = modelMapper.map(taskDto, Task.class);
-            taskRepository.save(task);
-        } catch (JsonProcessingException e) {System.out.println(e.getMessage());}
+        taskRepository.save(JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class));
     }
 
     @GetMapping("{id}")
-    public TaskWindowDto getTask(@PathVariable long id) {
+    public TaskWindowDto getTask(@PathVariable long id) throws NoSuchTaskException {
         Task task = taskRepository.findById(id);
         List<Category> categories = categoryRepository.findCategoriesByUserId(task.getUserId());
         ModelMapper modelMapper = new ModelMapper();
@@ -48,19 +44,20 @@ public class TaskController {
         return taskDto;
     }
 
+    @GetMapping
+    public List<TaskWindowDto> getTasks() {
+        List<Task> tasks = taskRepository.getTasksForUser(userService.findById(1L));
+        List<TaskWindowDto> dtoTasks = HomeJsonFormatter.mapList(tasks,TaskWindowDto.class);
+        return dtoTasks;
+    }
+
     @PutMapping
     public void updateTask(@RequestBody JsonNode json) {
-        ObjectMapper jsonMapper = new ObjectMapper();
-        ModelMapper modelMapper = new ModelMapper();
-        try {
-            TaskWindowDto taskDto = jsonMapper.treeToValue(json, TaskWindowDto.class);
-            Task task = modelMapper.map(taskDto, Task.class);
-            taskRepository.save(task);
-        } catch (JsonProcessingException e) {System.out.println(e.getMessage());}
+        taskRepository.save(JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable long id) {
+    public void deleteTask(@PathVariable long id) throws NoSuchTaskException {
         taskRepository.delete(id);
     }
 }

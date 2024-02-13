@@ -15,4 +15,5 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTaskByUserIdAndDoneByBetween(User user, LocalDateTime dayStart, LocalDateTime dayEnd);
     List<Task> findTaskByUserIdAndStartDateIsNullAndStopDateIsNull(User user);
     List<Task> findTaskByUserIdAndDoneByIsNullAndStopDateLessThan(User user, LocalDate today);
+    List<Task> findTaskByUserId(User user);
 }
