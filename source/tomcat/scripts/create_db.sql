@@ -11,7 +11,19 @@ CREATE TABLE IF NOT EXISTS public.users
     display_name varchar NOT NULL,
     userpic varchar,
     interests varchar,
-    created_at timestamp without time zone
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.user_settings
+(
+    user_id bigint NOT NULL,
+    events_track_start_date date,
+    events_track_weeks_num int,
+    week_start_day text NOT NULL,
+    CONSTRAINT user_settings_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS public.categories
@@ -59,11 +71,9 @@ CREATE TABLE IF NOT EXISTS public.user_plans
 (
     id bigserial PRIMARY KEY,
     user_id bigint,
-    name varchar NOT NULL,
+    plan_name varchar NOT NULL,
     details varchar,
     status integer NOT NULL DEFAULT 0,
-    full_estimate integer NOT NULL DEFAULT 0,
-    categories varchar[],
     CONSTRAINT plans_user_id_fkey FOREIGN KEY (user_id)
     REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -87,3 +97,19 @@ CREATE TABLE IF NOT EXISTS public.tasks_in_plans
     ON DELETE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS public.user_events
+(
+    id bigserial PRIMARY KEY,
+    user_id bigint,
+    week_num int NOT NULL DEFAULT 1,
+    day_of_week int NOT NULL,
+    event_name varchar NOT NULL,
+    place varchar,
+    event_format varchar,
+    start_time time NOT NULL,
+    stop_time time NOT NULL,
+    CONSTRAINT user_events_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+)

@@ -1,0 +1,21 @@
+{
+    "odd_week": {
+        "day_of_week": "Friday",
+        "study_classes": [
+            {
+                "name": "Иностранный язык",
+                "start_time": "12:00",
+                "stop_time": "13:35",
+                "place": "Корпус 17, 4-02",
+                "format": "оффлайн"
+            },
+            {
+                "name": "Иностранный язык",
+                "start_time": "12:00",
+                "stop_time": "13:35",
+                "place": "Корпус 17, 4-02",
+                "format": "оффлайн"
+            }
+        ]
+    }
+}

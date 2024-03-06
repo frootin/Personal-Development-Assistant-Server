@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyClass {
+public class EventDto {
     private String name;
     @JsonProperty("start_time")
     private String startTime;

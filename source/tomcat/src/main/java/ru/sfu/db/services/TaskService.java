@@ -12,6 +12,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +24,11 @@ import ru.sfu.exceptions.*;
 public class TaskService {
     @PersistenceContext
     private EntityManager entityManager;
+    private TaskRepository repository;
 
     protected Session getSession() {
         return entityManager.unwrap(Session.class);
     }
-
-    private TaskRepository repository;
 
     @Autowired
     public TaskService(TaskRepository repository) {
@@ -47,6 +49,22 @@ public class TaskService {
 
     public List<Task> getTasksForUser(User user) {
         return repository.findTaskByUserId(user);
+    }
+
+    public List<Task> getFixedTasksForDate(User user, LocalDate date) {
+        return repository.findTaskByUserIdAndStartDate(user, date);
+    }
+
+    public List<Task> getDoneTasksForDate(User user, LocalDate date) {
+        return repository.findTaskByUserIdAndDoneByBetween(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX));
+    }
+
+    public List<Task> getLateTasksForDate(User user, LocalDate date) {
+        return repository.findTaskByUserIdAndDoneByIsNullAndStopDateLessThan(user, date);
+    }
+
+    public List<Task> getFreeTasks(User user) {
+        return repository.findTaskByUserIdAndStartDateIsNullAndStopDateIsNull(user);
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

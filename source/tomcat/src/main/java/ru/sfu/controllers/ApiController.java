@@ -6,11 +6,10 @@ import ru.sfu.db.models.User;
 import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.UserService;
 import ru.sfu.formatters.DatetimeStringFormatter;
-import ru.sfu.db.repositories.TaskRepository;
+import ru.sfu.db.services.EventService;
 import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.HomeDto;
 import ru.sfu.objects.TaskWindowDto;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,13 +17,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-    private final TaskRepository taskRepository;
+    private final EventService eventService;
     private final UserService userRepository;
     private final TaskService taskService;
+    
 
 
-    public ApiController(TaskRepository taskRepository, UserService userRepository, TaskService taskService) {
-        this.taskRepository = taskRepository;
+    public ApiController(UserService userRepository, TaskService taskService, EventService eventService) {
+        this.eventService = eventService;
         this.userRepository = userRepository;
         this.taskService = taskService;
     }
@@ -34,7 +34,7 @@ public class ApiController {
     public HomeDto getMainPageForThreeDays(@PathVariable String year, @PathVariable String month, @PathVariable String day) {
         LocalDate centeredDate = DatetimeStringFormatter.getDateFromYearMonthDay(year, month, day);
         User curUser = userRepository.findById(1L);
-        return HomeJsonFormatter.getHomeDtoFromRepositories(taskRepository, curUser, centeredDate);
+        return HomeJsonFormatter.getHomeDtoFromRepositories(taskService, eventService, curUser, centeredDate);
     }
 
     @GetMapping("/filtered")

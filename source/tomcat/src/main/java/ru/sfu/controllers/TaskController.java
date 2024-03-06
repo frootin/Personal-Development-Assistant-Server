@@ -5,8 +5,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Category;
 import ru.sfu.db.models.Task;
-import ru.sfu.db.repositories.CategoryRepository;
 import ru.sfu.db.services.TaskService;
+import ru.sfu.db.services.CatService;
 import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.TaskWindowDto;
@@ -21,9 +21,9 @@ import ru.sfu.util.*;
 public class TaskController {
     TaskService taskRepository;
     UserService userService;
-    CategoryRepository categoryRepository;
+    CatService categoryRepository;
 
-    public TaskController(TaskService taskRepository, UserService userService, CategoryRepository categoryRepository) {
+    public TaskController(TaskService taskRepository, UserService userService, CatService categoryRepository) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.categoryRepository = categoryRepository;
@@ -37,7 +37,7 @@ public class TaskController {
     @GetMapping("{id}")
     public TaskWindowDto getTask(@PathVariable long id) throws NoSuchTaskException {
         Task task = taskRepository.findById(id);
-        List<Category> categories = categoryRepository.findCategoriesByUserId(task.getUserId());
+        List<Category> categories = categoryRepository.getCategoriesForUser(task.getUserId());
         ModelMapper modelMapper = new ModelMapper();
         TaskWindowDto taskDto = modelMapper.map(task, TaskWindowDto.class);
         taskDto.setAllUserCategories(HomeJsonFormatter.mapList(categories, CategoryDto.class));
