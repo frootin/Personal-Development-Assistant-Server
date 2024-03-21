@@ -6,7 +6,10 @@ import ru.sfu.db.models.Event;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.EventRepository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -35,6 +38,14 @@ public class EventService {
     }
 
     public List<Event> getEventsForDate(User user, LocalDate date) {
-        return repository.findEventsByUserIdAndDayOfWeekAndWeekNum(user, date.getDayOfWeek().getValue(), 1);
+        LocalDate eventsTrackStartDate = user.getSettings().getEventsTrackStartDate();
+        LocalDate nextStartOfWeek = eventsTrackStartDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        long daysUntilNextWeek = ChronoUnit.DAYS.between(eventsTrackStartDate, nextStartOfWeek);
+        long daysUntilDate = ChronoUnit.DAYS.between(eventsTrackStartDate, date);
+        long weekNum = 1;
+        if (daysUntilDate > daysUntilNextWeek) {
+            weekNum = (((daysUntilDate - daysUntilNextWeek) / 7 + 1) % user.getSettings().getEventsTrackWeeksNum()) + 1;
+        }
+        return repository.findEventsByUserIdAndDayOfWeekAndWeekNum(user, date.getDayOfWeek().getValue(), (int) weekNum);
     }
 }

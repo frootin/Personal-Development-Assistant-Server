@@ -17,5 +17,4 @@ public class TaskDto {
     @JsonProperty("stop_time")
     private String stopTime;
     private int status;
-
 }

@@ -9,6 +9,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
+@NamedEntityGraph(name = "Plan.tasks",
+        includeAllAttributes = true
+)
+@NamedEntityGraph(name = "notasks",
+       attributeNodes = {@NamedAttributeNode("status"),
+                         @NamedAttributeNode("name"),
+                         @NamedAttributeNode("details")
+                         }
+)
 @Table(name = "user_plans")
 public class Plan {
     @Id
@@ -23,6 +32,13 @@ public class Plan {
     private String details;
     @Column(name = "status")
     private int status;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "plan", fetch = FetchType.EAGER)
-    private List<Task> tasks;
+    @OneToMany(
+            mappedBy = "plan",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<TaskPlan> tasks;
+    /**@OneToMany(cascade = CascadeType.ALL, mappedBy = "plan", fetch = FetchType.EAGER)
+    private List<Task> tasks;*/
 }

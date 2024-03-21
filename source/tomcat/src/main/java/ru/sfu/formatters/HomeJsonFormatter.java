@@ -28,7 +28,8 @@ public class HomeJsonFormatter {
         DayDto tomorrow = getDayDtoFromRepositories(taskService, eventService, curUser, centeredDate.plusDays(1));
         List<TaskDto> freeTasks = mapList(taskService.getFreeTasks(curUser), TaskDto.class);
         List<TaskDto> lateTasks = mapList(taskService.getLateTasksForDate(curUser, centeredDate), TaskDto.class);
-        return new HomeDto(yesterday, today, tomorrow, freeTasks, lateTasks);
+        List<TaskDto> soonTasks = mapList(taskService.getTasksOnDeadline(curUser, centeredDate), TaskDto.class);
+        return new HomeDto(yesterday, today, tomorrow, freeTasks, lateTasks, soonTasks);
     }
 
     public static DayDto getDayDtoFromRepositories(TaskService taskService, EventService eventService, User user, LocalDate date) {

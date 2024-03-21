@@ -56,7 +56,7 @@ public class TaskService {
     }
 
     public List<Task> getDoneTasksForDate(User user, LocalDate date) {
-        return repository.findTaskByUserIdAndDoneByBetween(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX));
+        return repository.findTaskByUserIdAndDoneByBetweenAndStartDateIsNot(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX), date);
     }
 
     public List<Task> getLateTasksForDate(User user, LocalDate date) {
@@ -65,6 +65,10 @@ public class TaskService {
 
     public List<Task> getFreeTasks(User user) {
         return repository.findTaskByUserIdAndStartDateIsNullAndStopDateIsNull(user);
+    }
+
+    public List<Task> getTasksOnDeadline(User user, LocalDate date) {
+        return repository.findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThan(user, date, date);
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

@@ -28,6 +28,8 @@ public class User {
     private String interests;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy="userId")
+    private UserSettings settings;
 
     public User(String email, String username, String passhash, String displayName, String userpic, String interests, LocalDateTime createdAt) {
         this.email = email;

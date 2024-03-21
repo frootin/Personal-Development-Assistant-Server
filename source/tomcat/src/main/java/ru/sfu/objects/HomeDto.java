@@ -18,4 +18,6 @@ public class HomeDto {
     private List<TaskDto> freeTasks;
     @JsonProperty("late_tasks")
     private List<TaskDto> lateTasks;
+    @JsonProperty("soon_tasks")
+    private List<TaskDto> soonTasks;
 }

@@ -2,6 +2,8 @@ package ru.sfu.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.TypeMap;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Plan;
 import ru.sfu.db.services.CatService;
@@ -38,7 +40,10 @@ public class PlanController {
     @GetMapping
     public List<PlanDto> getPlans() {
         List<Plan> plans = planRepository.getPlansForUser(userService.findById(1L));
-        List<PlanDto> dtoPlans = HomeJsonFormatter.mapList(plans, PlanDto.class);
+        ModelMapper modelMapper = new ModelMapper();
+        TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
+        propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
+        List<PlanDto> dtoPlans = JsonUtil.mapListWithSkips(plans, PlanDto.class, modelMapper);
         return dtoPlans;
     }
 

@@ -4,8 +4,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,13 +43,20 @@ public class Task {
     private int status;
     @Column(name = "done_by")
     private LocalDateTime doneBy;
+    @OneToOne(
+            mappedBy = "task",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private TaskPlan plan;
+    /**
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "tasks_in_plans",
             joinColumns = @JoinColumn(name = "task_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "plan_id", referencedColumnName = "id"))
-    private Plan plan;
+    private Plan plan;*/
 
     public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
                 LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy) {
