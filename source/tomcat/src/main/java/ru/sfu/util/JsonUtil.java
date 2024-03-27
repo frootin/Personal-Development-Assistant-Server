@@ -26,6 +26,15 @@ public class JsonUtil {
         return null;
     }
 
+    public static <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+        ModelMapper modelMapper = new ModelMapper();
+        if (source == null) return null;
+        return source
+                .stream()
+                .map(element -> modelMapper.map(element, targetClass))
+                .collect(Collectors.toList());
+    }
+
     public static <S, T> T ModelToDto(S model, Class<T> dtoClass) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(model, dtoClass);

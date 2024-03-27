@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DaySchedule {
-    @JsonProperty("day_of_week")
-    private String dayOfWeek;
-    @JsonProperty("day_classes")
-    private List<EventDto> dayClasses;
+    @JsonProperty("day_by_num_order")
+    private int dayByOrder;
+    @JsonProperty("odd_week")
+    private List<EventDto> oddWeek;
+    @JsonProperty("even_week")
+    private List<EventDto> evenWeek;
 }

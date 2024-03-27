@@ -1,6 +1,7 @@
 package ru.sfu.controllers;
 
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.User;
 import ru.sfu.db.services.TaskService;
@@ -10,24 +11,19 @@ import ru.sfu.db.services.EventService;
 import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.HomeDto;
 import ru.sfu.objects.TaskWindowDto;
+import ru.sfu.util.JsonUtil;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class ApiController {
     private final EventService eventService;
     private final UserService userRepository;
     private final TaskService taskService;
-    
-
-
-    public ApiController(UserService userRepository, TaskService taskService, EventService eventService) {
-        this.eventService = eventService;
-        this.userRepository = userRepository;
-        this.taskService = taskService;
-    }
 
     @GetMapping(value="/{year}/{month}/{day}")
     @ResponseBody
@@ -43,7 +39,7 @@ public class ApiController {
                                            @RequestParam(required = false) String details,
                                            @RequestParam(required = false) Integer status) {
         User curUser = userRepository.findById(1L);
-        return HomeJsonFormatter.mapList(taskService.filterByFields(curUser, name, details, status), TaskWindowDto.class);
+        return JsonUtil.mapList(taskService.filterByFields(curUser, name, details, status), TaskWindowDto.class);
     }
 
 }

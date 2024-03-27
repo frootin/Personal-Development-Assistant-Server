@@ -48,4 +48,8 @@ public class EventService {
         }
         return repository.findEventsByUserIdAndDayOfWeekAndWeekNum(user, date.getDayOfWeek().getValue(), (int) weekNum);
     }
+
+    public List<Event> getSchedule(User user) {
+        return repository.findEventsByUserId(user);
+    }
 }

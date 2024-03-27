@@ -1,6 +1,7 @@
 package ru.sfu.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
@@ -16,15 +17,11 @@ import ru.sfu.util.*;
 
 @CrossOrigin
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/plans")
 public class PlanController {
     PlanService planRepository;
     UserService userService;
-
-    public PlanController(PlanService planRepository, UserService userService) {
-        this.planRepository = planRepository;
-        this.userService = userService;
-    }
     
     @PostMapping
     public void createPLan(@RequestBody JsonNode json) {

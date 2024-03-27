@@ -1,6 +1,7 @@
 package ru.sfu.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Category;
@@ -17,17 +18,12 @@ import ru.sfu.util.*;
 
 @CrossOrigin
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/tasks")
 public class TaskController {
     TaskService taskRepository;
     UserService userService;
     CatService categoryRepository;
-
-    public TaskController(TaskService taskRepository, UserService userService, CatService categoryRepository) {
-        this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.categoryRepository = categoryRepository;
-    }
 
     @PostMapping
     public void createTask(@RequestBody JsonNode json) {
@@ -40,14 +36,14 @@ public class TaskController {
         List<Category> categories = categoryRepository.getCategoriesForUser(task.getUserId());
         ModelMapper modelMapper = new ModelMapper();
         TaskWindowDto taskDto = modelMapper.map(task, TaskWindowDto.class);
-        taskDto.setAllUserCategories(HomeJsonFormatter.mapList(categories, CategoryDto.class));
+        taskDto.setAllUserCategories(JsonUtil.mapList(categories, CategoryDto.class));
         return taskDto;
     }
 
     @GetMapping
     public List<TaskWindowDto> getTasks() {
         List<Task> tasks = taskRepository.getTasksForUser(userService.findById(1L));
-        List<TaskWindowDto> dtoTasks = HomeJsonFormatter.mapList(tasks,TaskWindowDto.class);
+        List<TaskWindowDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
         return dtoTasks;
     }
 
