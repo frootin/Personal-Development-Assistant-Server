@@ -1,10 +1,12 @@
 package ru.sfu.db.services;
 
+import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.sfu.db.models.Task;
-import ru.sfu.db.models.User;
+import org.springframework.transaction.annotation.Transactional;
+import ru.sfu.db.models.*;
+import ru.sfu.db.repositories.TaskPlanRepository;
 import ru.sfu.db.repositories.TaskRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,22 +19,26 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ru.sfu.exceptions.*;
 
+@AllArgsConstructor
 @Service
 public class TaskService {
     @PersistenceContext
     private EntityManager entityManager;
     private TaskRepository repository;
+    private TaskPlanRepository taskPlanRepository;
 
     protected Session getSession() {
         return entityManager.unwrap(Session.class);
     }
 
     @Autowired
-    public TaskService(TaskRepository repository) {
+    public TaskService(TaskRepository repository, TaskPlanRepository taskPlanRepository) {
         this.repository = repository;
+        this.taskPlanRepository = taskPlanRepository;
     }
 
     public void save(Task task) {
@@ -69,6 +75,18 @@ public class TaskService {
 
     public List<Task> getTasksOnDeadline(User user, LocalDate date) {
         return repository.findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThan(user, date, date);
+    }
+
+    public void addTaskToPlan(Task task, Plan plan, long step) {
+        TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
+        taskPlanRepository.save(taskPlan);
+    }
+
+    //@Transactional
+    public void addTaskToPlan(Task task, Plan plan) {
+        long step = taskPlanRepository.countByPlan(plan) + 1;
+        TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
+        taskPlanRepository.save(taskPlan);
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

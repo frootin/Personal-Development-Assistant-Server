@@ -1,5 +1,6 @@
 package ru.sfu.db.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 public class UserSettings {
     @Id
     private Long id;
+    @JsonManagedReference
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @MapsId

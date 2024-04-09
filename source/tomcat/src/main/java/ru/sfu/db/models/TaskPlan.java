@@ -1,5 +1,6 @@
 package ru.sfu.db.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 public class TaskPlan {
     @EmbeddedId
     private TaskPlanId id;
+    @JsonManagedReference
     @ManyToOne
     @MapsId("taskId")
     private Task task;

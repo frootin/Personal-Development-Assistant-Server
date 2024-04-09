@@ -56,6 +56,12 @@ public class TaskWindowDto {
     private int status;
     private String timezone;
 
+    @JsonProperty("plan")
+    private PlanDto planDto;
+
     @JsonProperty("all_categories_for_user")
     private List<CategoryDto> allUserCategories;
+
+    @JsonProperty("all_plans_for_user")
+    private List<PlanDto> allUserPlans;
 }

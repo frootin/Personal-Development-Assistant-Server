@@ -1,5 +1,9 @@
 package ru.sfu.util;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.modelmapper.ModelMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.PropertyMap;
 import ru.sfu.objects.TaskWindowDto;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,5 +61,20 @@ public class JsonUtil {
                 .stream()
                 .map(element -> modelMapper.map(element, targetClass))
                 .collect(Collectors.toList());
+    }
+
+    public static <S, DtoC> DtoC mapModelWithSkips(S source, Class<DtoC> targetClass, ModelMapper modelMapper)  {
+        //ModelMapper modelMapper = new ModelMapper();
+        //modelMapper.addMappings(propertyMap);
+        return modelMapper.map(source, targetClass);
+    }
+
+    public static <S> S applyPatch(JsonPatch patch, S targetCustomer, Class<S> targetClass) throws JsonPatchException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetCustomer, JsonNode.class));
+        return objectMapper.treeToValue(patched, targetClass);
     }
 }

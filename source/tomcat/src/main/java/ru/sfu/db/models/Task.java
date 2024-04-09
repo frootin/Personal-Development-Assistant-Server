@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,6 +45,7 @@ public class Task {
     private int status;
     @Column(name = "done_by")
     private LocalDateTime doneBy;
+    @JsonBackReference
     @OneToOne(
             mappedBy = "task",
             cascade = CascadeType.ALL,

@@ -1,5 +1,6 @@
 package ru.sfu.db.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,7 @@ public class User {
     private String interests;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy="userId")
     private UserSettings settings;
 

@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class PlanDto {
     private long id;
-    //@JsonProperty("user_id")
-    //private long userId;
+    @JsonProperty("user_id")
+    private long userId;
     private String name;
     private String details;
     private int status;
