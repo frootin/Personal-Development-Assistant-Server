@@ -58,7 +58,7 @@ public class TaskService {
     }
 
     public List<Task> getFixedTasksForDate(User user, LocalDate date) {
-        return repository.findTaskByUserIdAndStartDate(user, date);
+        return repository.findTaskByUserIdAndStartDateOrStopDate(user, date, date);
     }
 
     public List<Task> getDoneTasksForDate(User user, LocalDate date) {
@@ -87,6 +87,14 @@ public class TaskService {
         long step = taskPlanRepository.countByPlan(plan) + 1;
         TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
         taskPlanRepository.save(taskPlan);
+    }
+
+    public List<Task> getTasksInCategoryBetweenDates(Category category, LocalDate startDate, LocalDate endDate) {
+        return repository.findTaskByCategoryIdAndDoneByBetween(category, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
+    }
+
+    public List<Task> getTasksBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return repository.findTaskByDoneByBetween(startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

@@ -17,6 +17,10 @@ public class CatService {
         this.repository = repository;
     }
 
+    public Category save(Category category) {
+        return repository.save(category);
+    }
+
     public Category findById(Long id) {
         return repository.findById(id).orElse(null);
     }

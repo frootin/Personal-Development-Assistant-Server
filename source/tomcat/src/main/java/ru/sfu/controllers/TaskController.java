@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Category;
 import ru.sfu.db.models.Plan;
 import ru.sfu.db.models.Task;
+import ru.sfu.db.models.TaskPlan;
 import ru.sfu.db.services.PlanService;
 import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.CatService;
@@ -46,16 +47,15 @@ public class TaskController {
     public TaskWindowDto getTask(@PathVariable long id) throws NoSuchTaskException {
         Task task = taskService.findById(id);
         List<Category> categories = categoryService.getCategoriesForUser(task.getUserId());
-        List<Plan> plans = planService.getPlansForUser(task.getUserId());
-        Plan plan = task.getPlan().getPlan();
         ModelMapper modelMapper = new ModelMapper();
         TaskWindowDto taskDto = modelMapper.map(task, TaskWindowDto.class);
         taskDto.setAllUserCategories(JsonUtil.mapList(categories, CategoryDto.class));
         TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
         propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
-        List<PlanDto> dtoPlans = JsonUtil.mapListWithSkips(plans, PlanDto.class, modelMapper);
-        taskDto.setAllUserPlans(dtoPlans);
-        taskDto.setPlanDto(JsonUtil.mapModelWithSkips(plan, PlanDto.class, modelMapper));
+        TaskPlan taskPlan = task.getPlan();
+        if (taskPlan != null) {
+            taskDto.setPlanDto(JsonUtil.mapModelWithSkips(taskPlan.getPlan(), PlanDto.class, modelMapper));
+        }
         return taskDto;
     }
 
