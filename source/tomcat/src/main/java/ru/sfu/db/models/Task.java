@@ -4,14 +4,12 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tasks")
@@ -93,5 +91,127 @@ public class Task {
         this.estimate = estimate;
         this.doneBy = doneBy;
         this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public int getEstimate() {
+        return estimate;
+    }
+
+    public void setEstimate(int estimate) {
+        this.estimate = estimate;
+    }
+
+    public Category getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Category categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getStopDate() {
+        return stopDate;
+    }
+
+    public void setStopDate(LocalDate stopDate) {
+        this.stopDate = stopDate;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(LocalTime stopTime) {
+        this.stopTime = stopTime;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getDoneBy() {
+        return doneBy;
+    }
+
+    public void setDoneBy(LocalDateTime doneBy) {
+        this.doneBy = doneBy;
+    }
+
+    public TaskPlan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(TaskPlan plan) {
+        this.plan = plan;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+        if (status == 1) {
+            this.doneBy = LocalDateTime.now(ZoneOffset.UTC);
+        }
+    }
+
+    @PreUpdate
+    public void updateDoneBy() {
+        if (this.status == 1) {
+            this.doneBy = LocalDateTime.now(ZoneOffset.UTC);
+        }
     }
 }

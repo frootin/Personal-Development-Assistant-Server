@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sfu.db.models.*;
+import ru.sfu.db.repositories.CategoryRepository;
 import ru.sfu.db.repositories.TaskPlanRepository;
 import ru.sfu.db.repositories.TaskRepository;
 import javax.persistence.EntityManager;
@@ -30,15 +31,17 @@ public class TaskService {
     private EntityManager entityManager;
     private TaskRepository repository;
     private TaskPlanRepository taskPlanRepository;
+    private CategoryRepository categoryRepository;
 
     protected Session getSession() {
         return entityManager.unwrap(Session.class);
     }
 
     @Autowired
-    public TaskService(TaskRepository repository, TaskPlanRepository taskPlanRepository) {
+    public TaskService(TaskRepository repository, TaskPlanRepository taskPlanRepository, CategoryRepository categoryRepository) {
         this.repository = repository;
         this.taskPlanRepository = taskPlanRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public void save(Task task) {
@@ -93,8 +96,13 @@ public class TaskService {
         return repository.findTaskByCategoryIdAndDoneByBetween(category, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
     }
 
-    public List<Task> getTasksBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return repository.findTaskByDoneByBetween(startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
+    public List<Task> getTasksBetweenDates(User user, LocalDate startDate, LocalDate endDate) {
+        return repository.findTaskByUserIdAndDoneByBetween(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
+    }
+
+    public List<Task> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
+        List<Category> categories = categoryRepository.findCategoriesByUserIdAndOnWatchIsTrue(user);
+        return repository.findTaskByUserIdAndDoneByBetweenAndInCategories(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), categories);
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

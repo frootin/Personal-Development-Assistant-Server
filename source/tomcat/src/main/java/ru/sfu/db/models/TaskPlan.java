@@ -24,4 +24,21 @@ public class TaskPlan {
     private Plan plan;
     @Column(name = "step_number")
     private int stepNumber;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (!(o instanceof TaskPlan))
+            return false;
+
+        return
+                id != null &&
+                        id.equals(((TaskPlan) o).getId());
+    }
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

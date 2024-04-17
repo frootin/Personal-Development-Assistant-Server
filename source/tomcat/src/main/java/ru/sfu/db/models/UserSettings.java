@@ -23,4 +23,9 @@ public class UserSettings {
     private LocalDate eventsTrackStartDate;
     @Column(name = "events_track_weeks_num")
     private int eventsTrackWeeksNum;
+
+    @Override
+    public int hashCode() {
+        return 42;
+    }
 }

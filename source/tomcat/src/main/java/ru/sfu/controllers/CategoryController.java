@@ -25,7 +25,6 @@ public class CategoryController {
     public void createCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
         assert category != null;
-        category.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
         categoryService.save(category);
     }
 
@@ -33,5 +32,12 @@ public class CategoryController {
     public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryService.getCategoriesForUser(userService.findById(1L));
         return JsonUtil.mapList(categories, CategoryDto.class);
+    }
+
+    @PutMapping
+    public void updateCategory(@RequestBody JsonNode json) {
+        Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
+        assert category != null;
+        categoryService.save(category);
     }
 }

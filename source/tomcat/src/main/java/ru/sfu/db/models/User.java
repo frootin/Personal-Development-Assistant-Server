@@ -2,6 +2,7 @@ package ru.sfu.db.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class User {
     private String interests;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @EqualsAndHashCode.Exclude
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy="userId")
     private UserSettings settings;
@@ -43,4 +45,8 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public int hashCode() {
+        return 42;
+    }
 }

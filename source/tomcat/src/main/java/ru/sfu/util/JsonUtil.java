@@ -13,11 +13,24 @@ import org.modelmapper.PropertyMap;
 import ru.sfu.objects.TaskWindowDto;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 public class JsonUtil {
+    public static final String datetimeFormat = "yyyy-MM-dd HH:mm";
+    public static final String dateFormat = "yyyy-MM-dd";
+
+    public static ObjectMapper getConfiguredObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setDateFormat(new SimpleDateFormat(datetimeFormat));
+        return objectMapper;
+    }
+
     public static <S, T> T JsonToSingleModel(JsonNode json, Class<S> dtoClass, Class<T> modelClass) {
         ObjectMapper jsonMapper = new ObjectMapper();
         ModelMapper modelMapper = new ModelMapper();
@@ -70,11 +83,13 @@ public class JsonUtil {
     }
 
     public static <S> S applyPatch(JsonPatch patch, S targetCustomer, Class<S> targetClass) throws JsonPatchException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
+        ObjectMapper objectMapper = getConfiguredObjectMapper();
         JsonNode patched = patch.apply(objectMapper.convertValue(targetCustomer, JsonNode.class));
         return objectMapper.treeToValue(patched, targetClass);
+    }
+
+    public static LocalDate getDateFromJson(JsonNode json, String fieldName) {
+        String dateString = json.get(fieldName).asText();
+        return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
     }
 }

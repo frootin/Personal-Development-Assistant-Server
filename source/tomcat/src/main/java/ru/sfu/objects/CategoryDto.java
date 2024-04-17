@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CategoryDto {
     private long id;
+    @JsonProperty("user_id")
+    private long userId;
     private String title;
     private String color;
     @JsonProperty("active")

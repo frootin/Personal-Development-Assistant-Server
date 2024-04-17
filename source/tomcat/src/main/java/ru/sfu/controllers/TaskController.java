@@ -46,14 +46,12 @@ public class TaskController {
     @GetMapping("{id}")
     public TaskWindowDto getTask(@PathVariable long id) throws NoSuchTaskException {
         Task task = taskService.findById(id);
-        List<Category> categories = categoryService.getCategoriesForUser(task.getUserId());
         ModelMapper modelMapper = new ModelMapper();
         TaskWindowDto taskDto = modelMapper.map(task, TaskWindowDto.class);
-        taskDto.setAllUserCategories(JsonUtil.mapList(categories, CategoryDto.class));
-        TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
-        propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
         TaskPlan taskPlan = task.getPlan();
         if (taskPlan != null) {
+            TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
+            propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
             taskDto.setPlanDto(JsonUtil.mapModelWithSkips(taskPlan.getPlan(), PlanDto.class, modelMapper));
         }
         return taskDto;

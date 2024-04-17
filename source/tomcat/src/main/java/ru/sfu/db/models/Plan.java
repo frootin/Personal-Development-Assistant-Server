@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -41,9 +42,7 @@ public class Plan {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<TaskPlan> tasks;
-    /**@OneToMany(cascade = CascadeType.ALL, mappedBy = "plan", fetch = FetchType.EAGER)
-    private List<Task> tasks;*/
+    private List<TaskPlan> tasks = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -90,10 +89,42 @@ public class Plan {
     }
 
     public void setTasks(List<TaskPlan> tasks) {
+        if (tasks == null) return;
         if (this.tasks != null) {
             this.tasks.clear();
             this.tasks.addAll(tasks);
+        } else {
+            //this.tasks = new ArrayList<>();
+            this.tasks.addAll(tasks);
         }
-        this.tasks = tasks;
+    }
+
+    public void addTask(TaskPlan comment) {
+        tasks.add(comment);
+        comment.setPlan(this);
+    }
+
+    public void removeTask(TaskPlan comment) {
+        tasks.remove(comment);
+        comment.setPlan(null);
+    }
+
+    @Override
+    public int hashCode() {
+        return 42;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Plan other = (Plan) obj;
+        if (id == null) {
+            return false;
+        } else return id.equals(other.id);
     }
 }

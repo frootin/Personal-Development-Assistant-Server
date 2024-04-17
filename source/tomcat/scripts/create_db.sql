@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS public.user_settings
     user_id bigint NOT NULL,
     events_track_start_date date,
     events_track_weeks_num int,
-    week_start_day text NOT NULL,
+    week_start_day varchar NOT NULL,
+    show_event_schedule boolean NOT NULL DEFAULT true,
     CONSTRAINT user_settings_user_id_fkey FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -64,7 +65,8 @@ CREATE TABLE IF NOT EXISTS public.tasks
     CONSTRAINT tasks_user_id_fkey FOREIGN KEY (user_id)
     REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+    CHECK (date_end >= date_start)
 );
 
 CREATE TABLE IF NOT EXISTS public.user_plans

@@ -2,9 +2,10 @@ package ru.sfu.db.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,7 @@ public class Category {
     private User userId;
     @Column(name = "on_watch")
     private Boolean onWatch;
+    @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

@@ -22,5 +22,8 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThan(User user, LocalDate today, LocalDate stopToday);
     List<Task> findTaskByUserId(User user);
     List<Task> findTaskByCategoryIdAndDoneByBetween(Category category, LocalDateTime dayStart, LocalDateTime dayEnd);
-    List<Task> findTaskByDoneByBetween(LocalDateTime dayStart, LocalDateTime dayEnd);
+    List<Task> findTaskByUserIdAndDoneByBetween(User user, LocalDateTime dayStart, LocalDateTime dayEnd);
+    @Query("SELECT t FROM Task t WHERE t.userId = :user_id AND t.doneBy BETWEEN :start AND :stop AND t.categoryId IN :categories")
+    List<Task> findTaskByUserIdAndDoneByBetweenAndInCategories(@Param("user_id") User user, @Param("start") LocalDateTime dayStart, @Param("stop") LocalDateTime dayEnd, @Param("categories") List<Category> categories);
+
 }
