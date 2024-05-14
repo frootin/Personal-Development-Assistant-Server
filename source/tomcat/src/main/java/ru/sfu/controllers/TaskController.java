@@ -10,15 +10,13 @@ import org.modelmapper.TypeMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.sfu.db.models.Category;
-import ru.sfu.db.models.Plan;
-import ru.sfu.db.models.Task;
-import ru.sfu.db.models.TaskPlan;
+import ru.sfu.db.models.*;
 import ru.sfu.db.services.PlanService;
 import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.CatService;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.PlanDto;
+import ru.sfu.objects.RepeatDto;
 import ru.sfu.objects.TaskWindowDto;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +37,22 @@ public class TaskController {
 
     @PostMapping
     public void createTask(@RequestBody JsonNode json) {
+        TaskWindowDto taskDto = JsonUtil.JsonToDto(json, TaskWindowDto.class);
+        assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
+        assert task != null;
+        if (taskDto.getRepeat() != null) {
+            RepeatDto repeatDto = taskDto.getRepeat();
+            Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getStart(), repeatDto.getEnd());
+            repeat.setName(task.getName());
+            repeat.setDetails(task.getDetails());
+            repeat.setCategoryId(task.getCategoryId());
+            repeat.setEstimate(task.getEstimate());
+            repeat.setUserId(task.getUserId());
+            repeat.setRepeatStart(repeatDto.getStart());
+
+
+        }
         taskService.save(task);
     }
 

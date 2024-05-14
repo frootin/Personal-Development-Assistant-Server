@@ -3,17 +3,19 @@ package ru.sfu.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.web.bind.annotation.*;
+import ru.sfu.db.models.Category;
 import ru.sfu.db.models.Plan;
-import ru.sfu.db.services.CatService;
+import ru.sfu.db.models.Task;
+import ru.sfu.db.models.TaskPlan;
 import ru.sfu.db.services.PlanService;
-import ru.sfu.formatters.HomeJsonFormatter;
-import ru.sfu.objects.PlanDto;
-import java.util.List;
 import ru.sfu.db.services.UserService;
-import ru.sfu.util.*;
+import ru.sfu.objects.CategoryDto;
+import ru.sfu.objects.PlanDto;
+import ru.sfu.util.JsonUtil;
+
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -31,7 +33,15 @@ public class PlanController {
     @GetMapping("{id}")
     public PlanDto readPlan(@PathVariable long id) {
         Plan plan = planRepository.findById(id);
-        return JsonUtil.ModelToDto(plan, PlanDto.class);
+        List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+        List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
+        int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
+        int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
+        PlanDto planDto = JsonUtil.ModelToDto(plan, PlanDto.class);
+        planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
+        planDto.setGoalPoints(overallSum);
+        planDto.setDonePoints(doneSum);
+        return planDto;
     }
 
     @GetMapping

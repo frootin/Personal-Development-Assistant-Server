@@ -19,8 +19,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import ru.sfu.exceptions.*;
 
@@ -100,9 +102,17 @@ public class TaskService {
         return repository.findTaskByUserIdAndDoneByBetween(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
     }
 
-    public List<Task> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
+    public Map<Category, List<Task>> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
         List<Category> categories = categoryRepository.findCategoriesByUserIdAndOnWatchIsTrue(user);
-        return repository.findTaskByUserIdAndDoneByBetweenAndInCategories(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), categories);
+        Map<Category, List<Task>> categoryListMap = new HashMap<>();
+        for (Category cat: categories) {
+            categoryListMap.put(cat, new ArrayList<Task>());
+        }
+        List<Task> tasks = repository.findTaskByUserIdAndDoneByBetweenAndInCategories(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), categories);
+        Map<Category, List<Task>> tasksByCategory = tasks.stream().collect(Collectors.groupingBy(item -> item.getCategoryId()));
+        tasksByCategory.forEach(
+                (key, value) -> categoryListMap.merge(key, value, (v1, v2) -> v2));
+        return categoryListMap;
     }
 
     public List<Task> filterByFields(User user, String name, String details, Integer status) {

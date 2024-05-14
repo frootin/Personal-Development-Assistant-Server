@@ -5,15 +5,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import ru.sfu.formatters.DatetimeStringFormatter;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tasks")
 public class Task {
+    public static final int DONE_STATUS = 1;
+    public static final int NOT_DONE_STATUS = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -91,6 +96,29 @@ public class Task {
         this.estimate = estimate;
         this.doneBy = doneBy;
         this.status = status;
+    }
+
+    public Task(Repeat repeat, LocalDate startDate, LocalDate stopDate) {
+        this.name = repeat.getName();
+        this.details = repeat.getDetails();
+        this.categoryId = repeat.getCategoryId();
+        this.estimate = repeat.getEstimate();
+        this.userId = repeat.getUserId();
+        this.startDate = startDate;
+        this.stopDate = stopDate;
+        this.startTime = repeat.getStartTime();
+        this.stopTime = repeat.getStopTime();
+        this.timezone = repeat.getTimezone();
+    }
+
+    public List<Task> getTasksFromRepeat(Repeat repeat) {
+        List<Task> tasks = new ArrayList<>();
+        LocalDate counterDate = repeat.getStartDate();
+        LocalDate stopDate = repeat.getStopDate();
+        if (stopDate == null) {
+            stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
+        }
+        return tasks;
     }
 
     public Long getId() {

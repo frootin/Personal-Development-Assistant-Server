@@ -44,6 +44,16 @@ public class JsonUtil {
         return null;
     }
 
+    public static <S> S JsonToDto(JsonNode json, Class<S> dtoClass) {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        try {
+            return jsonMapper.treeToValue(json, dtoClass);
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public static <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
         ModelMapper modelMapper = new ModelMapper();
         if (source == null) return null;

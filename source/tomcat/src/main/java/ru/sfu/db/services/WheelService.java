@@ -28,9 +28,7 @@ public class WheelService {
     }
 
     public List<WheelCategoryDto> getPointsForCategories(User user, LocalDate startDate, LocalDate endDate) {
-        List<Task> tasks = taskService.getTasksBetweenDatesInActive(user, startDate, endDate);
-        System.out.println(tasks.size());
-        Map<Category, List<Task>> tasksByCategory = tasks.stream().collect(Collectors.groupingBy(item -> item.getCategoryId()));
+        Map<Category, List<Task>> tasksByCategory = taskService.getTasksBetweenDatesInActive(user, startDate, endDate);
         List<WheelCategoryDto> wheelCategoryDtos = new ArrayList<>();
         tasksByCategory.forEach((cat, list) -> wheelCategoryDtos.add(new WheelCategoryDto(cat.getTitle(), list.stream().mapToInt(item -> item.getEstimate()).sum(), cat.getColor())));
         return wheelCategoryDtos;
