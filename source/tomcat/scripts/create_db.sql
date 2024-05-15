@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public.users
 CREATE TABLE IF NOT EXISTS public.user_settings
 (
     user_id bigint NOT NULL,
-    user_time_zone varchar check (now() at time zone measured_time_zone is not null),
+    user_time_zone varchar,
     events_track_start_date date,
     events_track_weeks_num int,
     week_start_day varchar NOT NULL,
@@ -155,5 +155,5 @@ CREATE TABLE IF NOT EXISTS public.repeats_in_tasks
         ON DELETE CASCADE,
     FOREIGN KEY (task_id) REFERENCES public.tasks (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );

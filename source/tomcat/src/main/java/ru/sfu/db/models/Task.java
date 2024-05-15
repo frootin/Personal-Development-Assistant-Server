@@ -1,10 +1,9 @@
 package ru.sfu.db.models;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,12 +110,23 @@ public class Task {
         this.timezone = repeat.getTimezone();
     }
 
-    public List<Task> getTasksFromRepeat(Repeat repeat) {
+    public List<Task> getTasksForWeekFromRepeat(Repeat repeat) {
+        LocalDate localStartDate;
+        LocalDate localEndDate;
         List<Task> tasks = new ArrayList<>();
         LocalDate counterDate = repeat.getStartDate();
         LocalDate stopDate = repeat.getStopDate();
         if (stopDate == null) {
             stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
+        }
+        counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        while (stopDate.isAfter(counterDate)) {
+            for (int i: repeat.getRepeatDays()) {
+                localStartDate = counterDate.plusDays(i - 1);
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                tasks.add(new Task(repeat, localStartDate, localEndDate));
+            }
+            counterDate = counterDate.plusDays(7);
         }
         return tasks;
     }
