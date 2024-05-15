@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -27,4 +28,21 @@ public class Category {
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Category other = (Category) obj;
+        return Objects.equals(id, other.getId());
+    }
 }
