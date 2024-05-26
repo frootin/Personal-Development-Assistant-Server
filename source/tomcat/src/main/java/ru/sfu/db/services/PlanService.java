@@ -36,8 +36,8 @@ public class PlanService {
         return entityManager.unwrap(Session.class);
     }
 
-    public void save(Plan plan) {
-        repository.save(plan);
+    public Plan save(Plan plan) {
+        return repository.save(plan);
     }
 
     public Plan findById(Long id) {

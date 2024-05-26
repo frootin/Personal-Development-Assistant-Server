@@ -26,8 +26,9 @@ public class PlanController {
     UserService userService;
     
     @PostMapping
-    public void createPLan(@RequestBody JsonNode json) {
-        planRepository.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+    public PlanDto createPLan(@RequestBody JsonNode json) {
+        Plan plan = planRepository.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+        return JsonUtil.ModelToDto(plan, PlanDto.class);
     }
 
     @GetMapping("{id}")

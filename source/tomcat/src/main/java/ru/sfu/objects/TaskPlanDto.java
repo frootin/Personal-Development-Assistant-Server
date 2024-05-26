@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskPlanDto {
-    private TaskDto task;
+    @JsonProperty("task_id")
+    private long taskId;
+    @JsonProperty("plan_id")
+    private long planId;
     @JsonProperty("step_number")
     private int stepNumber;
 }

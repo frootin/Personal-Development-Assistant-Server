@@ -36,7 +36,7 @@ public class TaskController {
     PlanService planService;
 
     @PostMapping
-    public void createTask(@RequestBody JsonNode json) {
+    public TaskWindowDto createTask(@RequestBody JsonNode json) {
         TaskWindowDto taskDto = JsonUtil.JsonToDto(json, TaskWindowDto.class);
         assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
@@ -50,10 +50,11 @@ public class TaskController {
             repeat.setEstimate(task.getEstimate());
             repeat.setUserId(task.getUserId());
             repeat.setRepeatStart(repeatDto.getStart());
-
-
         }
-        taskService.save(task);
+        return JsonUtil.ModelToDto(taskService.save(task), TaskWindowDto.class);
+        /**if (taskDto.getPlanDto() != null) {
+            taskService.addTaskToPlan(newtask, planService.findById(taskDto.getPlanDto().getId()));
+        }*/
     }
 
     @GetMapping("{id}")
