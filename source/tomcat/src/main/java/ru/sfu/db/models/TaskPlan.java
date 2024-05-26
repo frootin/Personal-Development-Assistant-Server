@@ -33,7 +33,9 @@ public class TaskPlan {
         if (!(o instanceof TaskPlan))
             return false;
 
-        return id != null && id.equals(((TaskPlan) o).getId());
+        return
+                id != null &&
+                        id.equals(((TaskPlan) o).getId());
     }
     @Override
     public int hashCode() {

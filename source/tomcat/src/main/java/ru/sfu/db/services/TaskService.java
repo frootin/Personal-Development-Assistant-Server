@@ -87,7 +87,7 @@ public class TaskService {
         taskPlanRepository.save(taskPlan);
     }
 
-    @Transactional
+    //@Transactional
     public void addTaskToPlan(Task task, Plan plan) {
         long step = taskPlanRepository.countByPlan(plan) + 1;
         TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
