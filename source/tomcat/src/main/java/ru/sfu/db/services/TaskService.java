@@ -75,7 +75,7 @@ public class TaskService {
     }
 
     public List<Task> getFreeTasks(User user) {
-        return repository.findTaskByUserIdAndStartDateIsNullAndStopDateIsNull(user);
+        return repository.findTaskByUserIdAndStopDateIsNullAndStatusIs(user, Task.NOT_DONE_STATUS);
     }
 
     public List<Task> getTasksOnDeadline(User user, LocalDate date) {
