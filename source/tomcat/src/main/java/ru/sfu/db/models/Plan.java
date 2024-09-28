@@ -16,12 +16,6 @@ import java.util.List;
 @NamedEntityGraph(name = "Plan.tasks",
         includeAllAttributes = true
 )
-@NamedEntityGraph(name = "notasks",
-       attributeNodes = {@NamedAttributeNode("status"),
-                         @NamedAttributeNode("name"),
-                         @NamedAttributeNode("details")
-                         }
-)
 @Table(name = "user_plans")
 public class Plan {
     @Id

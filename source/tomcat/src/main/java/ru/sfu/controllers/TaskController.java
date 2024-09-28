@@ -44,12 +44,6 @@ public class TaskController {
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getStart(), repeatDto.getEnd());
-            repeat.setName(task.getName());
-            repeat.setDetails(task.getDetails());
-            repeat.setCategoryId(task.getCategoryId());
-            repeat.setEstimate(task.getEstimate());
-            repeat.setUserId(task.getUserId());
-            repeat.setRepeatStart(repeatDto.getStart());
         }
         return JsonUtil.ModelToDto(taskService.save(task), TaskWindowDto.class);
         /**if (taskDto.getPlanDto() != null) {
@@ -68,14 +62,20 @@ public class TaskController {
             propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
             taskDto.setPlanDto(JsonUtil.mapModelWithSkips(taskPlan.getPlan(), PlanDto.class, modelMapper));
         }
+        /**if (task == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(foundStudent);
+        }*/
         return taskDto;
     }
 
     @GetMapping
-    public List<TaskWindowDto> getTasks() {
+    public ResponseEntity<List<TaskWindowDto>> getTasks() {
         List<Task> tasks = taskService.getTasksForUser(userService.findById(1L));
         List<TaskWindowDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
-        return dtoTasks;
+        //ResponseEntity.status()
+        return ResponseEntity.ok(dtoTasks);
     }
 
     @PutMapping

@@ -13,8 +13,10 @@ import ru.sfu.db.services.PlanService;
 import ru.sfu.db.services.UserService;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.PlanDto;
+import ru.sfu.objects.TaskWindowDto;
 import ru.sfu.util.JsonUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -53,6 +55,25 @@ public class PlanController {
         propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
         List<PlanDto> dtoPlans = JsonUtil.mapListWithSkips(plans, PlanDto.class, modelMapper);
         return dtoPlans;
+    }
+
+    @GetMapping("full")
+    public List<PlanDto> getFull() {
+        List<Plan> plans = planRepository.getFullPlansForUser(userService.findById(1L));
+        List<PlanDto> dtos = new ArrayList<>();
+        //List<PlanDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
+        for (Plan plan: plans) {
+            List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+            List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
+            int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
+            int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
+            PlanDto planDto = JsonUtil.ModelToDto(plan, PlanDto.class);
+            planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
+            planDto.setGoalPoints(overallSum);
+            planDto.setDonePoints(doneSum);
+            dtos.add(planDto);
+        }
+        return dtos;
     }
 
     @PutMapping

@@ -58,6 +58,10 @@ public class PlanService {
         return repository.findPlansByUserId(user);
     }
 
+    public List<Plan> getFullPlansForUser(User user) {
+        return repository.findFullPlansByUserId(user);
+    }
+
     public long getNumberOfTasksInPLan(Plan plan) {
         return taskPlanRepository.countByPlan(plan);
     }

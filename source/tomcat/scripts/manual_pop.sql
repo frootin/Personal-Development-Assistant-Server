@@ -38,4 +38,3 @@ INSERT INTO public.user_events(user_id, week_num, day_of_week, event_name, place
            (1, 1, 4, 'Машинно-зависимые языки программирования', '4-16', 'практика', '14:10'::time, '15:45'::time),
            (1, 2, 4, 'Машинно-зависимые языки программирования', '4-16', 'практика', '14:10'::time, '15:45'::time);
 
-INSERT INTO public.repeats
