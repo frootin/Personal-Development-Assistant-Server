@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.sfu.db.models.Category;
+import ru.sfu.db.models.Plan;
 import ru.sfu.db.models.Task;
 import ru.sfu.db.models.User;
 
@@ -30,4 +31,7 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
                                                                @Param("start") LocalDateTime dayStart,
                                                                @Param("stop") LocalDateTime dayEnd,
                                                                @Param("categories") List<Category> categories);
+
+    @Query("SELECT t FROM Task t JOIN t.plan p WHERE p.plan = :plan ORDER BY p.stepNumber")
+    List<Task> findTaskByPlan(@Param("plan") Plan plan);
 }

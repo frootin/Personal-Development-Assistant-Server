@@ -10,9 +10,11 @@ import ru.sfu.db.models.Plan;
 import ru.sfu.db.models.Task;
 import ru.sfu.db.models.TaskPlan;
 import ru.sfu.db.services.PlanService;
+import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.UserService;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.PlanDto;
+import ru.sfu.objects.TaskDto;
 import ru.sfu.objects.TaskWindowDto;
 import ru.sfu.util.JsonUtil;
 
@@ -26,6 +28,7 @@ import java.util.List;
 public class PlanController {
     PlanService planRepository;
     UserService userService;
+    TaskService taskService;
     
     @PostMapping
     public PlanDto createPLan(@RequestBody JsonNode json) {
@@ -36,7 +39,8 @@ public class PlanController {
     @GetMapping("{id}")
     public PlanDto readPlan(@PathVariable long id) {
         Plan plan = planRepository.findById(id);
-        List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+        //List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+        List<Task> tasks = taskService.getTasksForPlan(plan);
         List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
         int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
         int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
@@ -44,6 +48,7 @@ public class PlanController {
         planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
         planDto.setGoalPoints(overallSum);
         planDto.setDonePoints(doneSum);
+        planDto.setTasks(JsonUtil.mapList(tasks, TaskDto.class));
         return planDto;
     }
 
@@ -63,7 +68,8 @@ public class PlanController {
         List<PlanDto> dtos = new ArrayList<>();
         //List<PlanDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
         for (Plan plan: plans) {
-            List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+            //List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
+            List<Task> tasks = taskService.getTasksForPlan(plan);
             List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
             int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
             int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
@@ -71,6 +77,7 @@ public class PlanController {
             planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
             planDto.setGoalPoints(overallSum);
             planDto.setDonePoints(doneSum);
+            planDto.setTasks(JsonUtil.mapList(tasks, TaskDto.class));
             dtos.add(planDto);
         }
         return dtos;

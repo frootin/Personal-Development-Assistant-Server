@@ -34,6 +34,12 @@ public class CategoryController {
         return JsonUtil.mapList(categories, CategoryDto.class);
     }
 
+    @GetMapping("/active")
+    public List<CategoryDto> getActiveCategories() {
+        List<Category> categories = categoryService.getActiveCategoriesForUser(userService.findById(1L));
+        return JsonUtil.mapList(categories, CategoryDto.class);
+    }
+
     @PutMapping
     public void updateCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);

@@ -12,6 +12,12 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
+import ru.sfu.db.models.Plan;
+import ru.sfu.db.models.Task;
+import ru.sfu.db.models.TaskPlan;
+import ru.sfu.util.JsonUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,4 +72,17 @@ public class TaskWindowDto {
 
     @JsonProperty("plan")
     private PlanDto planDto;
+
+    @JsonProperty("plan_id")
+    private Long referId;
+
+    public void setPlan(Task task) {
+        ModelMapper modelMapper = new ModelMapper();
+        TaskPlan taskPlan = task.getPlan();
+        if (taskPlan != null) {
+            TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
+            propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
+            this.setPlanDto(JsonUtil.mapModelWithSkips(taskPlan.getPlan(), PlanDto.class, modelMapper));
+        }
+    }
 }

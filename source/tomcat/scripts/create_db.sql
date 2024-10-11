@@ -157,3 +157,14 @@ CREATE TABLE IF NOT EXISTS public.repeats_in_tasks
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS public.day_notes
+(
+   id bigserial PRIMARY KEY,
+   user_id bigint,
+   assigned_day date UNIQUE,
+   note_text text,
+   FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE
+       ON UPDATE NO ACTION
+       ON DELETE CASCADE
+);

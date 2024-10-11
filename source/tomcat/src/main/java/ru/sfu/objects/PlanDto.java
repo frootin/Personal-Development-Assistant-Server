@@ -17,7 +17,7 @@ public class PlanDto {
     private String name;
     private String details;
     private int status;
-    private List<TaskPlanDto> tasks;
+    private List<TaskDto> tasks;
     private List<CategoryDto> categories;
     @JsonProperty("goal_points")
     private int goalPoints;

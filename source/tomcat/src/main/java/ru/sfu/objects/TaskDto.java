@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskDto {
-    private long id;
+    @JsonProperty("id")
+    private long taskId;
     private String name;
     @JsonProperty("start_time")
     private String startTime;

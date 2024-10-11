@@ -28,4 +28,8 @@ public class CatService {
     public List<Category> getCategoriesForUser(User user) {
         return repository.findCategoriesByUserId(user);
     }
+
+    public List<Category> getActiveCategoriesForUser(User user) {
+        return repository.findCategoriesByUserIdAndOnWatchIsTrue(user);
+    }
 }

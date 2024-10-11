@@ -62,6 +62,10 @@ public class TaskService {
         return repository.findTaskByUserId(user);
     }
 
+    public List<Task> getTasksForPlan(Plan plan) {
+        return repository.findTaskByPlan(plan);
+    }
+
     public List<Task> getFixedTasksForDate(User user, LocalDate date) {
         return repository.findTaskByUserIdAndStartDateOrStopDate(user, date, date);
     }
