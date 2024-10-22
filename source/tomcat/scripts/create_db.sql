@@ -168,3 +168,15 @@ CREATE TABLE IF NOT EXISTS public.day_notes
        ON UPDATE NO ACTION
        ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS public.diary_entries
+(
+   id bigserial PRIMARY KEY,
+   user_id bigint,
+   entry_text text,
+   created_at timestamp without time zone,
+   updated_at timestamp without time zone,
+   FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE
+       ON UPDATE NO ACTION
+       ON DELETE CASCADE
+);

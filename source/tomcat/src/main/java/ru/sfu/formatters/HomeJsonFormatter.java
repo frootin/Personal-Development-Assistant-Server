@@ -7,10 +7,9 @@ import ru.sfu.db.models.User;
 import ru.sfu.db.services.DayNoteService;
 import ru.sfu.db.services.EventService;
 import ru.sfu.db.services.TaskService;
-import ru.sfu.objects.DayDto;
-import ru.sfu.objects.HomeDto;
-import ru.sfu.objects.EventDto;
-import ru.sfu.objects.TaskDto;
+import ru.sfu.objects.*;
+import ru.sfu.util.JsonUtil;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,9 +38,9 @@ public class HomeJsonFormatter {
         List<EventDto> eventDtos = getEventsForDate(eventService, user, date);
         String dateAsString = date.toString();
         DayNote note = dayNoteService.findByDate(date);
-        String textNote = null;
+        DayNoteDto textNote = null;
         if (note != null) {
-            textNote = note.getText();
+            textNote = JsonUtil.ModelToDto(note, DayNoteDto.class);
         }
         return new DayDto(fixedTasks, doneTasks, dateAsString, textNote, eventDtos);
     }

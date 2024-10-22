@@ -1,8 +1,10 @@
 package ru.sfu.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Event;
+import ru.sfu.db.models.Plan;
 import ru.sfu.db.models.User;
 import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.UserService;
@@ -42,6 +44,22 @@ public class EventController {
         }
         scheduleDto.setDays(days);
         return scheduleDto;
+    }
+
+    @PostMapping
+    public EventDetailsDto createEvent(@RequestBody JsonNode json) {
+        Event plan = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        return JsonUtil.ModelToDto(plan, EventDetailsDto.class);
+    }
+
+    @PutMapping
+    public void updateEvent(@RequestBody JsonNode json) {
+        eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteEvent(@PathVariable long id) {
+        eventService.delete(id);
     }
 
 }

@@ -8,13 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventDto {
+public class DiaryEntryDto {
     private long id;
-    private String name;
-    @JsonProperty("start_time")
-    private String startTime;
-    @JsonProperty("stop_time")
-    private String stopTime;
-    private String place;
-    private String format;
+    @JsonProperty("user_id")
+    private long userId;
 }

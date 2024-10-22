@@ -18,7 +18,7 @@ public class DayDto {
     private List<TaskDto> doneTasks;
     private String date;
     @JsonProperty("text_note")
-    private String textNote;
+    private DayNoteDto textNote;
     @JsonProperty("day_classes")
     private List<EventDto> eventDtos;
 }

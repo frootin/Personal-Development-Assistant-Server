@@ -21,8 +21,8 @@ public class EventService {
         this.repository = repository;
     }
 
-    public void save(Event event) {
-        repository.save(event);
+    public Event save(Event event) {
+        return repository.save(event);
     }
 
     public Event findById(Long id) {
