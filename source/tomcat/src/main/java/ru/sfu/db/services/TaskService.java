@@ -3,6 +3,7 @@ package ru.sfu.db.services;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sfu.db.models.*;
@@ -15,9 +16,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +29,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import ru.sfu.exceptions.*;
+import ru.sfu.formatters.DatetimeStringFormatter;
+import ru.sfu.objects.RepeatDto;
+import ru.sfu.objects.TaskWindowDto;
+import ru.sfu.util.JsonUtil;
 
 @AllArgsConstructor
 @Service
@@ -40,7 +48,9 @@ public class TaskService {
     }
 
     @Autowired
-    public TaskService(TaskRepository repository, TaskPlanRepository taskPlanRepository, CategoryRepository categoryRepository) {
+    public TaskService(TaskRepository repository,
+                       TaskPlanRepository taskPlanRepository,
+                       CategoryRepository categoryRepository) {
         this.repository = repository;
         this.taskPlanRepository = taskPlanRepository;
         this.categoryRepository = categoryRepository;
@@ -91,6 +101,11 @@ public class TaskService {
         taskPlanRepository.save(taskPlan);
     }
 
+    public void updateTaskPlan(Task task, Plan plan, long step) {
+        TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
+        taskPlanRepository.save(taskPlan);
+    }
+
     //@Transactional
     public void addTaskToPlan(Task task, Plan plan) {
         long step = taskPlanRepository.countByPlan(plan) + 1;
@@ -103,7 +118,7 @@ public class TaskService {
     }
 
     public List<Task> getTasksBetweenDates(User user, LocalDate startDate, LocalDate endDate) {
-        return repository.findTaskByUserIdAndDoneByBetween(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
+        return repository.findTaskByUserIdAndDoneByBetween(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), Sort.by(Sort.Direction.ASC, "doneBy"));
     }
 
     public Map<Category, List<Task>> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
@@ -140,5 +155,156 @@ public class TaskService {
         Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 
         return session.createQuery(cq.where(finalPredicate)).getResultList();
+    }
+
+    public List<Task> createWeeklyRepeatTasks(Repeat repeat) {
+        LocalDate localStartDate;
+        LocalDate localEndDate;
+        List<Task> tasks = new ArrayList<>();
+        LocalDate counterDate = repeat.getStartDate();
+        LocalDate stopDate = repeat.getStopDate();
+        if (repeat.getNumberOfRepeats() != 0) {
+            Integer currentRepeatsNum = 1;
+            while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
+                for (int i: repeat.getRepeatDays()) {
+                    if (currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
+                        break;
+                    }
+                    localStartDate = counterDate.plusDays(i - 1);
+                    localEndDate = null;
+                    if (repeat.getStopDate() != null) {
+                        localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                    }
+                    tasks.add(new Task(repeat, localStartDate, localEndDate));
+                    currentRepeatsNum++;
+                }
+                counterDate = counterDate.plusDays(7);
+            }
+            return tasks;
+        }
+        if (stopDate == null) {
+            stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
+        }
+        counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        while (stopDate.isAfter(counterDate)) {
+            for (int i: repeat.getRepeatDays()) {
+                localStartDate = counterDate.plusDays(i - 1);
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                tasks.add(new Task(repeat, localStartDate, localEndDate));
+            }
+            counterDate = counterDate.plusDays(7);
+        }
+        return tasks;
+    }
+
+    public List<Task> createDailyRepeatTasks(Repeat repeat) {
+        LocalDate localStartDate;
+        LocalDate localEndDate;
+        List<Task> tasks = new ArrayList<>();
+        LocalDate counterDate = repeat.getRepeatStart();
+        LocalDate stopDate = repeat.getRepeatEnd();
+        System.out.println("we're here");
+        if (repeat.getNumberOfRepeats() != 0) {
+            System.out.println(repeat.getNumberOfRepeats());
+            for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
+                localStartDate = counterDate.plusDays(1);
+                localEndDate = null;
+                if (repeat.getStopDate() != null) {
+                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                }
+                tasks.add(new Task(repeat, localStartDate, localEndDate));
+            }
+            return tasks;
+        }
+        if (stopDate == null) {
+            stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
+        }
+        System.out.println(counterDate.toString());
+        System.out.println(stopDate.toString());
+        System.out.println(stopDate.isAfter(counterDate));
+        while (stopDate.isAfter(counterDate)) {
+            System.out.println("we're in the while counterdate");
+            localStartDate = counterDate.plusDays(1);
+            localEndDate = null;
+            if (repeat.getStopDate() != null) {
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+            }
+            tasks.add(new Task(repeat, localStartDate, localEndDate));
+            counterDate = counterDate.plusDays(1);
+        }
+        return tasks;
+    }
+
+    public List<Task> createMonthlyRepeatTasks(Repeat repeat) {
+        LocalDate localStartDate;
+        LocalDate localEndDate;
+        List<Task> tasks = new ArrayList<>();
+        LocalDate counterDate = repeat.getStartDate();
+        LocalDate stopDate = repeat.getStopDate();
+        if (repeat.getNumberOfRepeats() != 0) {
+            Integer currentRepeatsNum = 1;
+            while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
+                for (int i: repeat.getRepeatDays()) {
+                    if (currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
+                        break;
+                    }
+                    localStartDate = DatetimeStringFormatter.getClosestExistingMonthlyDate(counterDate, i);
+                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                    tasks.add(new Task(repeat, localStartDate, localEndDate));
+                    currentRepeatsNum++;
+                }
+                counterDate = counterDate.plusMonths(1);
+            }
+            return tasks;
+        }
+        if (stopDate == null) {
+            stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
+        }
+        while (stopDate.isAfter(counterDate)) {
+            for (int i: repeat.getRepeatDays()) {
+                localStartDate = DatetimeStringFormatter.getClosestExistingMonthlyDate(counterDate, i);
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                tasks.add(new Task(repeat, localStartDate, localEndDate));
+            }
+            counterDate = counterDate.plusMonths(1);
+        }
+        return tasks;
+    }
+
+    public List<Task> createYearlyRepeatTasks(Repeat repeat) {
+        LocalDate localStartDate;
+        LocalDate localEndDate;
+        List<Task> tasks = new ArrayList<>();
+        LocalDate counterDate = repeat.getStartDate();
+        LocalDate stopDate = repeat.getStopDate();
+        if (repeat.getNumberOfRepeats() != 0) {
+            for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
+                localStartDate = counterDate.plusYears(1);
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                tasks.add(new Task(repeat, localStartDate, localEndDate));
+            }
+            return tasks;
+        }
+        if (stopDate == null) {
+            stopDate = LocalDate.of(counterDate.plusYears(1).getYear(), 12, 31);
+        }
+        while (stopDate.isAfter(counterDate)) {
+            localStartDate = counterDate.plusYears(1);
+            localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+            tasks.add(new Task(repeat, localStartDate, localEndDate));
+            counterDate = counterDate.plusYears(1);
+        }
+        return tasks;
+    }
+
+    public void createTasksForRepeat(Repeat repeat) {
+        List<Task> tasks = new ArrayList<>();
+        switch (repeat.getRepeatTerm()) {
+            case Repeat.DAILY -> tasks = createDailyRepeatTasks(repeat);
+            case Repeat.WEEKLY -> tasks =createWeeklyRepeatTasks(repeat);
+            case Repeat.MONTHLY -> tasks = createMonthlyRepeatTasks(repeat);
+            case Repeat.YEARLY -> tasks = createYearlyRepeatTasks(repeat);
+        }
+        repository.saveAll(tasks);
     }
 }

@@ -20,11 +20,11 @@ public class DiaryEntry {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userId;
 
-    @Column
-    private String title;
-
     @Column(name = "entry_text")
     private String text;
+
+    @Column(name = "assigned_day")
+    private LocalDate day;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

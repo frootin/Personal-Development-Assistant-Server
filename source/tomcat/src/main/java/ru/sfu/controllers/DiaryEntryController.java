@@ -24,6 +24,11 @@ public class DiaryEntryController {
         return JsonUtil.mapList(diaryEntryService.getAllEntries(userService.findById(1L)), DiaryEntryDto.class);
     }
 
+    @GetMapping("{id}")
+    public DiaryEntryDto getEntryById(@PathVariable long id) {
+        return JsonUtil.ModelToDto(diaryEntryService.findById(id), DiaryEntryDto.class);
+    }
+
     @PostMapping
     public DiaryEntryDto createEntry(@RequestBody JsonNode json) {
         DiaryEntry note = diaryEntryService.save(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
@@ -32,7 +37,7 @@ public class DiaryEntryController {
 
     @PutMapping
     public DiaryEntryDto updateEntry(@RequestBody JsonNode json) {
-        DiaryEntry note = diaryEntryService.save(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
+        DiaryEntry note = diaryEntryService.updateOrInsert(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
     }
 }

@@ -61,6 +61,7 @@ public class TaskWindowDto {
 
     private int estimate;
 
+
     private RepeatDto repeat;
     private int status;
     private String timezone;

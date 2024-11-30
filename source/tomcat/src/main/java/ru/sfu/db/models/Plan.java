@@ -1,12 +1,10 @@
 package ru.sfu.db.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +26,10 @@ public class Plan {
     private String name;
     @Column
     private String details;
+    @Column(name = "date_start")
+    private LocalDate startDate;
+    @Column(name = "date_end")
+    private LocalDate stopDate;
     @Column(name = "status")
     private int status;
     @OneToMany(
@@ -68,6 +70,22 @@ public class Plan {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getStopDate() {
+        return stopDate;
+    }
+
+    public void setStopDate(LocalDate stopDate) {
+        this.stopDate = stopDate;
     }
 
     public int getStatus() {

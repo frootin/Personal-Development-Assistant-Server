@@ -3,6 +3,7 @@ package ru.sfu.db.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.sfu.db.models.DayNote;
+import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.DayNoteRepository;
 
 import java.time.LocalDate;
@@ -24,5 +25,10 @@ public class DayNoteService {
         List<DayNote> note = repository.findDayNoteByDay(date);
         if (note.isEmpty()) return null;
         return note.get(0);
+    }
+
+    public DayNote findByDateOrBefore(User user, LocalDate date) {
+        DayNote note = repository.findFirstByOrderByDayDescByUserIdAndDayLessThanEqual(user, date).get(0);
+        return note;
     }
 }

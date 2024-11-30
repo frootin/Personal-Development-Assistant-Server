@@ -1,6 +1,7 @@
 package ru.sfu.db.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.sfu.db.models.DiaryEntry;
 import ru.sfu.db.models.User;
@@ -21,6 +22,10 @@ public class DiaryEntryService {
         return repository.save(diaryEntry);
     }
 
+    public DiaryEntry updateOrInsert(DiaryEntry diaryEntry) {
+        return repository.updateOrInsert(diaryEntry);
+    }
+
     public DiaryEntry findById(Long id) {
         return repository.findById(id).orElse(null);
     }
@@ -30,6 +35,6 @@ public class DiaryEntryService {
     }
 
     public List<DiaryEntry> getAllEntries(User user) {
-        return repository.findEntriesByUserId(user);
+        return repository.findEntriesByUserId(user, Sort.by(Sort.Direction.DESC, "day"));
     }
 }

@@ -1,13 +1,12 @@
 package ru.sfu.db.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.annotations.TypeDef;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -15,7 +14,15 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Data
 @Table(name = "repeats")
+@TypeDef(
+        typeClass = IntArrayType.class,
+        defaultForType = int[].class
+)
 public class Repeat {
+    public static final String WEEKLY = "week";
+    public static final String DAILY = "day";
+    public static final String MONTHLY = "month";
+    public static final String YEARLY = "year";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,13 +54,19 @@ public class Repeat {
     private LocalDate repeatEnd;
     @Column(name = "repeat_term")
     private String repeatTerm;
-    @Column(name = "repeat_days")
+    //@Type(ListArrayType.class)
+    @Column(
+            name = "repeat_days",
+            columnDefinition = "integer[]"
+    )
     private int[] repeatDays;
+    @Column(name = "number_of_repeats")
+    private Integer numberOfRepeats;
     @ManyToOne
     @JoinColumn(name = "plan_id", referencedColumnName = "id")
     private Plan planId;
 
-    public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd) {
+    public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd, int numberOfRepeats) {
         this.name = task.getName();
         this.details = task.getDetails();
         this.categoryId = task.getCategoryId();
@@ -71,5 +84,6 @@ public class Repeat {
         this.repeatDays = repeatDays;
         this.repeatStart = repeatStart;
         this.repeatEnd = repeatEnd;
+        this.numberOfRepeats = numberOfRepeats;
     }
 }

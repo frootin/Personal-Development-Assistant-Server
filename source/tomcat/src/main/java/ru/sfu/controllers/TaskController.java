@@ -11,9 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.*;
-import ru.sfu.db.services.PlanService;
-import ru.sfu.db.services.TaskService;
-import ru.sfu.db.services.CatService;
+import ru.sfu.db.services.*;
+import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.PlanDto;
 import ru.sfu.objects.RepeatDto;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import ru.sfu.exceptions.*;
-import ru.sfu.db.services.UserService;
 import ru.sfu.util.*;
 
 @CrossOrigin
@@ -34,27 +32,11 @@ public class TaskController {
     UserService userService;
     CatService categoryService;
     PlanService planService;
+    RepeatService repeatService;
 
     @PostMapping
     public TaskWindowDto createTask(@RequestBody JsonNode json) {
-        TaskWindowDto taskDto = JsonUtil.JsonToDto(json, TaskWindowDto.class);
-        assert taskDto != null;
-        Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
-        assert task != null;
-        if (taskDto.getRepeat() != null) {
-            RepeatDto repeatDto = taskDto.getRepeat();
-            Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getStart(), repeatDto.getEnd());
-        }
-        task = taskService.save(task);
-        if (taskDto.getReferId() != null) {
-            Plan plan = planService.findById(taskDto.getReferId());
-            long step = planService.getNumberOfTasksInPLan(plan) + 1;
-            taskService.addTaskToPlan(task, plan, step);
-        }
-        return JsonUtil.ModelToDto(task, TaskWindowDto.class);
-        /**if (taskDto.getPlanDto() != null) {
-            taskService.addTaskToPlan(newtask, planService.findById(taskDto.getPlanDto().getId()));
-        }*/
+        return HomeJsonFormatter.saveFromDetailedDto(taskService, planService, repeatService, json);
     }
 
     @GetMapping("{id}")
@@ -80,8 +62,8 @@ public class TaskController {
     }
 
     @PutMapping
-    public void updateTask(@RequestBody JsonNode json) {
-        taskService.save(JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class));
+    public TaskWindowDto updateTask(@RequestBody JsonNode json) {
+        return HomeJsonFormatter.updateFromDetailedDto(taskService, planService, repeatService, json);
     }
 
     @DeleteMapping("/{id}")

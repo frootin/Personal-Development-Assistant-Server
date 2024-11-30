@@ -18,6 +18,7 @@ public class DayNoteDto {
     private long id;
     @JsonProperty("user_id")
     private long userId;
+    @JsonProperty("assigned_day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate day;

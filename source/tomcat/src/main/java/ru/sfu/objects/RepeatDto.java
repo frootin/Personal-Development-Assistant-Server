@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,12 +18,14 @@ import java.time.LocalDate;
 public class RepeatDto {
     private String term;
     private int[] days;
+    @JsonProperty("start")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate start;
+    private LocalDate repeatStart;
+    @JsonProperty("end")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate end;
+    private LocalDate repeatEnd;
     @JsonProperty("number_of_repeats")
     private int numberOfRepeats;
 }

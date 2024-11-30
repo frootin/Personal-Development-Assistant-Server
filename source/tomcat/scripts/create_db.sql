@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.categories
     id bigserial PRIMARY KEY,
     title varchar NOT NULL,
     color varchar NOT NULL,
-    user_id bigint,
+    user_id bigint NOT NULL,
     on_watch boolean NOT NULL,
     created_at timestamp without time zone,
     CONSTRAINT categories_user_id_color_key UNIQUE (user_id, color),
@@ -44,10 +44,55 @@ CREATE TABLE IF NOT EXISTS public.categories
     ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS public.user_plans
+(
+    id bigserial PRIMARY KEY,
+    user_id bigint NOT NULL,
+    plan_name varchar NOT NULL,
+    details varchar,
+    date_start date,
+    date_end date,
+    status integer NOT NULL DEFAULT 0,
+    CONSTRAINT plans_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS public.repeats
+(
+    id bigserial PRIMARY KEY,
+    user_id bigint NOT NULL,
+    task_name varchar NOT NULL,
+    details varchar,
+    estimate integer NOT NULL,
+    category_id bigint,
+    date_start date,
+    date_end date,
+    time_start time,
+    time_end time,
+    task_timezone varchar,
+    repeat_term varchar NOT NULL,
+    repeat_days int[],
+    repeat_start date NOT NULL,
+    repeat_end date,
+    number_of_repeats int,
+    plan_id bigint,
+    FOREIGN KEY (category_id) REFERENCES public.categories (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES public.user_plans (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS public.tasks
 (
     id bigserial PRIMARY KEY,
-    user_id bigint,
+    user_id bigint NOT NULL,
     task_name varchar NOT NULL,
     details varchar,
     estimate integer NOT NULL,
@@ -59,6 +104,7 @@ CREATE TABLE IF NOT EXISTS public.tasks
     task_timezone varchar,
     status integer NOT NULL DEFAULT 0,
     done_by timestamp without time zone,
+    repeat_id bigint DEFAULT NULL,
     CONSTRAINT tasks_category_id_fkey FOREIGN KEY (category_id)
     REFERENCES public.categories (id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -67,26 +113,16 @@ CREATE TABLE IF NOT EXISTS public.tasks
     REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE CASCADE,
+    FOREIGN KEY (repeat_id) REFERENCES public.repeats (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE SET NULL,
     CHECK (date_end >= date_start)
-);
-
-CREATE TABLE IF NOT EXISTS public.user_plans
-(
-    id bigserial PRIMARY KEY,
-    user_id bigint,
-    plan_name varchar NOT NULL,
-    details varchar,
-    status integer NOT NULL DEFAULT 0,
-    CONSTRAINT plans_user_id_fkey FOREIGN KEY (user_id)
-    REFERENCES public.users (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS public.tasks_in_plans
 (
-    task_id bigint,
-    plan_id bigint,
+    task_id bigint NOT NULL,
+    plan_id bigint NOT NULL,
     step_number integer NOT NULL,
     CONSTRAINT tasks_in_plans_pkey PRIMARY KEY (task_id, plan_id),
     CONSTRAINT tasks_in_plans_task_id_key UNIQUE (task_id),
@@ -103,7 +139,7 @@ CREATE TABLE IF NOT EXISTS public.tasks_in_plans
 CREATE TABLE IF NOT EXISTS public.user_events
 (
     id bigserial PRIMARY KEY,
-    user_id bigint,
+    user_id bigint NOT NULL,
     week_num int NOT NULL DEFAULT 1,
     day_of_week int NOT NULL,
     event_name varchar NOT NULL,
@@ -117,52 +153,11 @@ CREATE TABLE IF NOT EXISTS public.user_events
     ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS public.repeats
-(
-    id bigserial PRIMARY KEY,
-    user_id bigint,
-    task_name varchar NOT NULL,
-    details varchar,
-    estimate integer NOT NULL,
-    category_id bigint,
-    date_start date,
-    date_end date,
-    time_start time,
-    time_end time,
-    task_timezone varchar,
-    repeat_term varchar NOT NULL,
-    repeat_days int[],
-    repeat_start date NOT NULL,
-    repeat_end date,
-    plan_id bigint,
-    FOREIGN KEY (category_id) REFERENCES public.categories (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE CASCADE,
-    FOREIGN KEY (plan_id) REFERENCES public.user_plans (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS public.repeats_in_tasks
-(
-    repeat_id bigint NOT NULL,
-    task_id bigint NOT NULL,
-    FOREIGN KEY (repeat_id) REFERENCES public.repeats (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE,
-    FOREIGN KEY (task_id) REFERENCES public.tasks (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS public.day_notes
 (
    id bigserial PRIMARY KEY,
-   user_id bigint,
-   assigned_day date UNIQUE,
+   user_id bigint NOT NULL,
+   assigned_day date UNIQUE NOT NULL,
    note_text text,
    FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE
        ON UPDATE NO ACTION
@@ -172,8 +167,9 @@ CREATE TABLE IF NOT EXISTS public.day_notes
 CREATE TABLE IF NOT EXISTS public.diary_entries
 (
    id bigserial PRIMARY KEY,
-   user_id bigint,
+   user_id bigint NOT NULL,
    entry_text text,
+   assigned_day date UNIQUE NOT NULL,
    created_at timestamp without time zone,
    updated_at timestamp without time zone,
    FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE

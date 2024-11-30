@@ -27,8 +27,8 @@ public class EventDetailsDto {
     @JsonProperty("event_name")
     private String eventName;
     private String place;
-    @JsonProperty("event_format")
-    private String eventFormat;
+    @JsonProperty("format")
+    private String eventFormat;;
 
     @JsonProperty("start_time")
     @JsonDeserialize(using = LocalTimeDeserializer.class)

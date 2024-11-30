@@ -4,10 +4,16 @@ import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.sfu.db.models.Category;
 import ru.sfu.db.models.Plan;
+import ru.sfu.db.models.Task;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.PlanRepository;
 import ru.sfu.db.repositories.TaskPlanRepository;
+import ru.sfu.objects.CategoryDto;
+import ru.sfu.objects.PlanDto;
+import ru.sfu.objects.TaskDto;
+import ru.sfu.util.JsonUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -62,7 +68,24 @@ public class PlanService {
         return repository.findFullPlansByUserId(user);
     }
 
+    public List<Plan> getFullPlansForUserByStatus(User user, int status) {
+        return repository.findFullPlansByUserIdAndStatus(user, status);
+    }
+
     public long getNumberOfTasksInPLan(Plan plan) {
         return taskPlanRepository.countByPlan(plan);
+    }
+
+    public PlanDto getFullDtoFromPlan(Plan plan, TaskService taskService) {
+        List<Task> tasks = taskService.getTasksForPlan(plan);
+        List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
+        int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
+        int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
+        PlanDto planDto = JsonUtil.ModelToDto(plan, PlanDto.class);
+        planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
+        planDto.setGoalPoints(overallSum);
+        planDto.setDonePoints(doneSum);
+        planDto.setTasks(JsonUtil.mapList(tasks, TaskDto.class));
+        return planDto;
     }
 }

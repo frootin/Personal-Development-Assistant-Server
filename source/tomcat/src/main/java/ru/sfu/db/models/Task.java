@@ -6,10 +6,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import ru.sfu.formatters.DatetimeStringFormatter;
 
 @Entity
 @NoArgsConstructor
@@ -47,6 +45,9 @@ public class Task {
     private int status;
     @Column(name = "done_by")
     private LocalDateTime doneBy;
+    @ManyToOne
+    @JoinColumn(name = "repeat_id", referencedColumnName = "id", nullable = true)
+    private Repeat repeatId;
     @JsonBackReference
     @OneToOne(
             mappedBy = "task",
@@ -64,6 +65,24 @@ public class Task {
     private Plan plan;*/
 
     public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
+                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy,
+                Repeat repeatId) {
+        this.userId = userId;
+        this.name = name;
+        this.details = details;
+        this.estimate = estimate;
+        this.categoryId = categoryId;
+        this.startDate = startDate;
+        this.stopDate = stopDate;
+        this.startTime = startTime;
+        this.stopTime = stopTime;
+        this.timezone = timezone;
+        this.status = status;
+        this.doneBy = doneBy;
+        this.repeatId = repeatId;
+    }
+
+    public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
                 LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy) {
         this.userId = userId;
         this.name = name;
@@ -77,6 +96,7 @@ public class Task {
         this.timezone = timezone;
         this.status = status;
         this.doneBy = doneBy;
+        //this.repeatId = repeatId;
     }
 
     public Task(long id, String name, int status) {
@@ -108,6 +128,8 @@ public class Task {
         this.startTime = repeat.getStartTime();
         this.stopTime = repeat.getStopTime();
         this.timezone = repeat.getTimezone();
+        this.status = NOT_DONE_STATUS;
+        this.repeatId = repeat;
     }
 
     public List<Task> getTasksForWeekFromRepeat(Repeat repeat) {
@@ -251,5 +273,13 @@ public class Task {
         if (this.status == 1) {
             this.doneBy = LocalDateTime.now(ZoneOffset.UTC);
         }
+    }
+
+    public Repeat getRepeatId() {
+        return repeatId;
+    }
+
+    public void setRepeatId(Repeat repeatId) {
+        this.repeatId = repeatId;
     }
 }

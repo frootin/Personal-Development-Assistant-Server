@@ -44,6 +44,12 @@ public class JsonUtil {
         return null;
     }
 
+    public static <S, T> T DtoToModel(S dto, Class<S> dtoClass, Class<T> modelClass) {
+        ModelMapper modelMapper = new ModelMapper();
+        T model = modelMapper.map(dto, modelClass);
+        return model;
+    }
+
     public static <S> S JsonToDto(JsonNode json, Class<S> dtoClass) {
         ObjectMapper jsonMapper = new ObjectMapper();
         try {

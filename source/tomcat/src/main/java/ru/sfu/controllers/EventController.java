@@ -4,23 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.Event;
-import ru.sfu.db.models.Plan;
 import ru.sfu.db.models.User;
-import ru.sfu.db.services.TaskService;
 import ru.sfu.db.services.UserService;
-import ru.sfu.formatters.DatetimeStringFormatter;
 import ru.sfu.db.services.EventService;
-import ru.sfu.formatters.HomeJsonFormatter;
 import ru.sfu.objects.*;
 import ru.sfu.util.JsonUtil;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @CrossOrigin
 @RestController
@@ -28,11 +21,11 @@ import java.util.stream.Stream;
 @RequestMapping("/api/events")
 public class EventController {
     private final EventService eventService;
-    private final UserService userRepository;
+    private final UserService userService;
 
     @GetMapping
     public ScheduleDto getSchedule() {
-        User curUser = userRepository.findById(1L);
+        User curUser = userService.findById(1L);
         List<Event> events = eventService.getSchedule(curUser);
         ScheduleDto scheduleDto = new ScheduleDto();
         scheduleDto.setNumberOfWeeks(curUser.getSettings().getEventsTrackWeeksNum());
@@ -48,13 +41,14 @@ public class EventController {
 
     @PostMapping
     public EventDetailsDto createEvent(@RequestBody JsonNode json) {
-        Event plan = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
-        return JsonUtil.ModelToDto(plan, EventDetailsDto.class);
+        Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
     @PutMapping
-    public void updateEvent(@RequestBody JsonNode json) {
-        eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+    public EventDetailsDto updateEvent(@RequestBody JsonNode json) {
+        Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
     @DeleteMapping("/{id}")

@@ -23,15 +23,17 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiController {
     private final EventService eventService;
-    private final UserService userRepository;
+    private final UserService userService;
     private final TaskService taskService;
     private final DayNoteService dayNoteService;
 
     @GetMapping(value="/{year}/{month}/{day}")
     @ResponseBody
-    public HomeDto getMainPageForThreeDays(@PathVariable String year, @PathVariable String month, @PathVariable String day) {
+    public HomeDto getMainPageForThreeDays(@PathVariable String year,
+                                           @PathVariable String month,
+                                           @PathVariable String day) {
         LocalDate centeredDate = DatetimeStringFormatter.getDateFromYearMonthDay(year, month, day);
-        User curUser = userRepository.findById(1L);
+        User curUser = userService.findById(1L);
         return HomeJsonFormatter.getHomeDtoFromRepositories(taskService, eventService, dayNoteService, curUser, centeredDate);
     }
 
@@ -40,7 +42,7 @@ public class ApiController {
     public List<TaskWindowDto> getFiltered(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String details,
                                            @RequestParam(required = false) Integer status) {
-        User curUser = userRepository.findById(1L);
+        User curUser = userService.findById(1L);
         return JsonUtil.mapList(taskService.filterByFields(curUser, name, details, status), TaskWindowDto.class);
     }
 

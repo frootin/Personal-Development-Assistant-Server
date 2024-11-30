@@ -66,19 +66,8 @@ public class PlanController {
     public List<PlanDto> getFull() {
         List<Plan> plans = planRepository.getFullPlansForUser(userService.findById(1L));
         List<PlanDto> dtos = new ArrayList<>();
-        //List<PlanDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
         for (Plan plan: plans) {
-            //List<Task> tasks = plan.getTasks().stream().map(TaskPlan::getTask).toList();
-            List<Task> tasks = taskService.getTasksForPlan(plan);
-            List<Category> categories = tasks.stream().map(Task::getCategoryId).distinct().toList();
-            int overallSum = tasks.stream().mapToInt(item -> item.getEstimate()).sum();
-            int doneSum = tasks.stream().filter(c -> c.getStatus() == Task.DONE_STATUS).mapToInt(item -> item.getEstimate()).sum();
-            PlanDto planDto = JsonUtil.ModelToDto(plan, PlanDto.class);
-            planDto.setCategories(JsonUtil.mapList(categories, CategoryDto.class));
-            planDto.setGoalPoints(overallSum);
-            planDto.setDonePoints(doneSum);
-            planDto.setTasks(JsonUtil.mapList(tasks, TaskDto.class));
-            dtos.add(planDto);
+            dtos.add(planRepository.getFullDtoFromPlan(plan, taskService));
         }
         return dtos;
     }
