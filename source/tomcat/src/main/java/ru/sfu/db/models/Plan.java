@@ -16,6 +16,9 @@ import java.util.List;
 )
 @Table(name = "user_plans")
 public class Plan {
+    public static final int DONE_STATUS = 1;
+    public static final int NOT_DONE_STATUS = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

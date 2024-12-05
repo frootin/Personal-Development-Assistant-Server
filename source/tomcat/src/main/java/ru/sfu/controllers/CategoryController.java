@@ -22,10 +22,10 @@ public class CategoryController {
     CatService categoryService;
 
     @PostMapping
-    public void createCategory(@RequestBody JsonNode json) {
+    public CategoryDto createCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
         assert category != null;
-        categoryService.save(category);
+        return JsonUtil.ModelToDto(categoryService.save(category), CategoryDto.class);
     }
 
     @GetMapping
@@ -41,9 +41,9 @@ public class CategoryController {
     }
 
     @PutMapping
-    public void updateCategory(@RequestBody JsonNode json) {
+    public CategoryDto updateCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
         assert category != null;
-        categoryService.save(category);
+        return JsonUtil.ModelToDto(categoryService.save(category), CategoryDto.class);
     }
 }

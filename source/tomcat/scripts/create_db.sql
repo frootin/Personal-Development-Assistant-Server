@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS public.repeats
     repeat_term varchar NOT NULL,
     repeat_days int[],
     repeat_start date NOT NULL,
+    repeat_interval int NOT NULL DEFAULT 1,
     repeat_end date,
     number_of_repeats int,
     plan_id bigint,

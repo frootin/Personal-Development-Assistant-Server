@@ -57,7 +57,8 @@ public class HomeJsonFormatter {
         assert task != null;
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
-            Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(), repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats());
+            Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
+                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval());
             repeat = repeatService.save(repeat);
             task.setRepeatId(repeat);
             taskService.createTasksForRepeat(repeat);

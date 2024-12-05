@@ -1,5 +1,6 @@
 package ru.sfu.db.repositories;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Long> {
-    List<Category> findCategoriesByUserId(User user);
+    List<Category> findCategoriesByUserId(User user, Sort sort);
     @Query("SELECT c FROM Category c WHERE c.userId = :user_id AND c.onWatch = true")
     List<Category> findCategoriesByUserIdAndOnWatchIsTrue(@Param("user_id") User user);
 }

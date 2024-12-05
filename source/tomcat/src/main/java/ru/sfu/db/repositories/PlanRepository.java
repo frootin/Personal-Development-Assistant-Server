@@ -20,11 +20,11 @@ public interface PlanRepository extends CrudRepository<Plan, Long> {
 
     List<Plan> findPlansByUserId(User user);
 
-    @Query("SELECT t FROM Plan t WHERE t.userId = :user_id ORDER BY t.startDate DESC")
+    @Query("SELECT t FROM Plan t WHERE t.userId = :user_id ORDER BY t.id DESC")
     @EntityGraph(value = "Plan.tasks", type = EntityGraph.EntityGraphType.LOAD)
     List<Plan> findFullPlansByUserId(@Param("user_id") User userId);
 
-    @Query("SELECT t FROM Plan t WHERE t.userId = :user_id AND t.status = :status ORDER BY t.startDate DESC")
+    @Query("SELECT t FROM Plan t WHERE t.userId = :user_id AND t.status = :status ORDER BY t.id DESC")
     @EntityGraph(value = "Plan.tasks", type = EntityGraph.EntityGraphType.LOAD)
     List<Plan> findFullPlansByUserIdAndStatus(@Param("user_id") User userId, @Param("status") int status);
 }

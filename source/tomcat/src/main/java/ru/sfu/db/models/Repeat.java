@@ -62,11 +62,14 @@ public class Repeat {
     private int[] repeatDays;
     @Column(name = "number_of_repeats")
     private Integer numberOfRepeats;
+    @Column(name = "repeat_interval")
+    private Integer repeatInterval;
     @ManyToOne
     @JoinColumn(name = "plan_id", referencedColumnName = "id")
     private Plan planId;
 
-    public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd, int numberOfRepeats) {
+    public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd,
+                  int numberOfRepeats, Integer repeatInterval) {
         this.name = task.getName();
         this.details = task.getDetails();
         this.categoryId = task.getCategoryId();
@@ -85,5 +88,6 @@ public class Repeat {
         this.repeatStart = repeatStart;
         this.repeatEnd = repeatEnd;
         this.numberOfRepeats = numberOfRepeats;
+        this.repeatInterval = repeatInterval;
     }
 }

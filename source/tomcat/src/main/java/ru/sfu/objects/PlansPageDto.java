@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PlansPageDto {
     @JsonProperty("active_plans")
-    private List<PlanDto> freeTasks;
+    private List<PlanDto> activePlans;
     @JsonProperty("archived_plans")
-    private List<PlanDto> lateTasks;
+    private List<PlanDto> archivePlans;
 }

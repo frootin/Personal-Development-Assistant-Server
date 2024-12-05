@@ -163,6 +163,7 @@ public class TaskService {
         List<Task> tasks = new ArrayList<>();
         LocalDate counterDate = repeat.getStartDate();
         LocalDate stopDate = repeat.getStopDate();
+        counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         if (repeat.getNumberOfRepeats() != 0) {
             Integer currentRepeatsNum = 1;
             while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
@@ -170,7 +171,7 @@ public class TaskService {
                     if (currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
                         break;
                     }
-                    localStartDate = counterDate.plusDays(i - 1);
+                    localStartDate = counterDate.plusDays(i);
                     localEndDate = null;
                     if (repeat.getStopDate() != null) {
                         localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
@@ -178,21 +179,23 @@ public class TaskService {
                     tasks.add(new Task(repeat, localStartDate, localEndDate));
                     currentRepeatsNum++;
                 }
-                counterDate = counterDate.plusDays(7);
+                counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
             }
             return tasks;
         }
         if (stopDate == null) {
             stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
         }
-        counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         while (stopDate.isAfter(counterDate)) {
             for (int i: repeat.getRepeatDays()) {
-                localStartDate = counterDate.plusDays(i - 1);
-                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                localStartDate = counterDate.plusDays(i);
+                localEndDate = null;
+                if (repeat.getStopDate() != null) {
+                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                }
                 tasks.add(new Task(repeat, localStartDate, localEndDate));
             }
-            counterDate = counterDate.plusDays(7);
+            counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
         }
         return tasks;
     }
@@ -239,8 +242,8 @@ public class TaskService {
         LocalDate localStartDate;
         LocalDate localEndDate;
         List<Task> tasks = new ArrayList<>();
-        LocalDate counterDate = repeat.getStartDate();
-        LocalDate stopDate = repeat.getStopDate();
+        LocalDate counterDate = repeat.getRepeatStart();
+        LocalDate stopDate = repeat.getRepeatEnd();
         if (repeat.getNumberOfRepeats() != 0) {
             Integer currentRepeatsNum = 1;
             while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
@@ -249,11 +252,14 @@ public class TaskService {
                         break;
                     }
                     localStartDate = DatetimeStringFormatter.getClosestExistingMonthlyDate(counterDate, i);
-                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                    localEndDate = null;
+                    if (repeat.getStopDate() != null) {
+                        localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                    }
                     tasks.add(new Task(repeat, localStartDate, localEndDate));
                     currentRepeatsNum++;
                 }
-                counterDate = counterDate.plusMonths(1);
+                counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
             }
             return tasks;
         }
@@ -263,10 +269,13 @@ public class TaskService {
         while (stopDate.isAfter(counterDate)) {
             for (int i: repeat.getRepeatDays()) {
                 localStartDate = DatetimeStringFormatter.getClosestExistingMonthlyDate(counterDate, i);
-                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                localEndDate = null;
+                if (repeat.getStopDate() != null) {
+                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                }
                 tasks.add(new Task(repeat, localStartDate, localEndDate));
             }
-            counterDate = counterDate.plusMonths(1);
+            counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
         }
         return tasks;
     }
@@ -275,12 +284,15 @@ public class TaskService {
         LocalDate localStartDate;
         LocalDate localEndDate;
         List<Task> tasks = new ArrayList<>();
-        LocalDate counterDate = repeat.getStartDate();
-        LocalDate stopDate = repeat.getStopDate();
+        LocalDate counterDate = repeat.getRepeatStart();
+        LocalDate stopDate = repeat.getRepeatEnd();
         if (repeat.getNumberOfRepeats() != 0) {
             for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
-                localStartDate = counterDate.plusYears(1);
-                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                localStartDate = counterDate.plusYears(repeat.getRepeatInterval());
+                localEndDate = null;
+                if (repeat.getStopDate() != null) {
+                    localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+                }
                 tasks.add(new Task(repeat, localStartDate, localEndDate));
             }
             return tasks;
@@ -290,9 +302,12 @@ public class TaskService {
         }
         while (stopDate.isAfter(counterDate)) {
             localStartDate = counterDate.plusYears(1);
-            localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+            localEndDate = null;
+            if (repeat.getStopDate() != null) {
+                localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
+            }
             tasks.add(new Task(repeat, localStartDate, localEndDate));
-            counterDate = counterDate.plusYears(1);
+            counterDate = counterDate.plusYears(repeat.getRepeatInterval());
         }
         return tasks;
     }
@@ -301,7 +316,7 @@ public class TaskService {
         List<Task> tasks = new ArrayList<>();
         switch (repeat.getRepeatTerm()) {
             case Repeat.DAILY -> tasks = createDailyRepeatTasks(repeat);
-            case Repeat.WEEKLY -> tasks =createWeeklyRepeatTasks(repeat);
+            case Repeat.WEEKLY -> tasks = createWeeklyRepeatTasks(repeat);
             case Repeat.MONTHLY -> tasks = createMonthlyRepeatTasks(repeat);
             case Repeat.YEARLY -> tasks = createYearlyRepeatTasks(repeat);
         }

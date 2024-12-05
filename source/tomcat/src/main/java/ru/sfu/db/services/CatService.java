@@ -1,6 +1,7 @@
 package ru.sfu.db.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.sfu.db.models.Category;
 import ru.sfu.db.models.User;
@@ -26,7 +27,7 @@ public class CatService {
     }
 
     public List<Category> getCategoriesForUser(User user) {
-        return repository.findCategoriesByUserId(user);
+        return repository.findCategoriesByUserId(user, Sort.by(Sort.Direction.DESC, "onWatch"));
     }
 
     public List<Category> getActiveCategoriesForUser(User user) {

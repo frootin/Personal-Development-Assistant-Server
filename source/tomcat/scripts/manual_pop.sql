@@ -19,7 +19,7 @@ INSERT INTO public.user_settings(user_id, events_track_start_date, events_track_
 
 INSERT INTO public.user_plans(user_id, plan_name, details, status)
     VALUES (1, 'Поступление', 'Очень надо', 0),
-           (1, 'Проект', 'Для себя', 0);
+           (1, 'Проект', 'Для себя', 1);
 
 INSERT INTO public.repeats(user_id, task_name, details, estimate, category_id, date_start, date_end, time_start, time_end, task_timezone, repeat_term, repeat_days, repeat_start,repeat_end, plan_id)
     VALUES (1, 'Подать документы', 'В университет', 3, 3, null, null, null, null, '', 'week', '{1, 3, 5}', '2023-12-13'::date, '2024-12-13'::date, null);

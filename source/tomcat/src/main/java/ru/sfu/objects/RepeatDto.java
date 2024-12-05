@@ -10,12 +10,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RepeatDto {
+    @JsonProperty("repeat_interval")
+    private int repeatInterval;
     private String term;
     private int[] days;
     @JsonProperty("start")
