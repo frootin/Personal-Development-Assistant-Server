@@ -32,7 +32,7 @@ public class HomeJsonFormatter {
     public static DayDto getDayDtoFromRepositories(TaskService taskService, EventService eventService, DayNoteService dayNoteService, User user, LocalDate date) {
         List<TaskDto> fixedTasks = mapList(taskService.getFixedTasksForDate(user, date), TaskDto.class);
         List<TaskDto> doneTasks = mapList(taskService.getDoneTasksForDate(user, date), TaskDto.class);
-        List<EventDto> eventDtos = getEventsForDate(eventService, user, date);
+        List<EventDetailsDto> eventDtos = getEventsForDate(eventService, user, date);
         String dateAsString = date.toString();
         DayNote note = dayNoteService.findByDateOrBefore(user, date);
         DayNoteDto textNote = null;
@@ -42,9 +42,9 @@ public class HomeJsonFormatter {
         return new DayDto(fixedTasks, doneTasks, dateAsString, textNote, eventDtos);
     }
    
-    public static List<EventDto> getEventsForDate(EventService eventService, User user, LocalDate date) {
+    public static List<EventDetailsDto> getEventsForDate(EventService eventService, User user, LocalDate date) {
         List<Event> events = eventService.getEventsForDate(user, date);
-        return mapList(events, EventDto.class);
+        return mapList(events, EventDetailsDto.class);
     }
 
     public static TaskWindowDto saveFromDetailedDto(TaskService taskService,

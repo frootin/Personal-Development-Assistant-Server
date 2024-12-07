@@ -20,5 +20,5 @@ public class DayDto {
     @JsonProperty("text_note")
     private DayNoteDto textNote;
     @JsonProperty("day_classes")
-    private List<EventDto> eventDtos;
+    private List<EventDetailsDto> eventDtos;
 }

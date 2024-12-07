@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EventDto {
     private long id;
+    @JsonProperty("event_name")
     private String name;
     @JsonProperty("start_time")
     private String startTime;

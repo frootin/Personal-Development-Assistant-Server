@@ -15,7 +15,7 @@ public class DaySchedule {
     @JsonProperty("day_by_num_order")
     private int dayByOrder;
     @JsonProperty("odd_week")
-    private List<EventDto> oddWeek;
+    private List<EventDetailsDto> oddWeek;
     @JsonProperty("even_week")
-    private List<EventDto> evenWeek;
+    private List<EventDetailsDto> evenWeek;
 }

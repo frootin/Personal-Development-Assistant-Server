@@ -33,7 +33,7 @@ public class EventController {
         List<DaySchedule> days = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             Map<Integer, List<Event>> dayEventsByWeek = eventsByDay.getOrDefault(i, new ArrayList<Event>()).stream().collect(Collectors.groupingBy(item -> item.getWeekNum()));
-            days.add(new DaySchedule(i, JsonUtil.mapList(dayEventsByWeek.get(1), EventDto.class), JsonUtil.mapList(dayEventsByWeek.get(2), EventDto.class)));
+            days.add(new DaySchedule(i, JsonUtil.mapList(dayEventsByWeek.get(1), EventDetailsDto.class), JsonUtil.mapList(dayEventsByWeek.get(2), EventDetailsDto.class)));
         }
         scheduleDto.setDays(days);
         return scheduleDto;
