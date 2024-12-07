@@ -24,7 +24,7 @@ public class EventDetailsDto {
     private int weekNum;
     @JsonProperty("day_of_week")
     private int dayOfWeek;
-    @JsonProperty("event_name")
+    @JsonProperty("name")
     private String eventName;
     private String place;
     @JsonProperty("format")
