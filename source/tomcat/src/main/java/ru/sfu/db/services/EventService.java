@@ -46,7 +46,7 @@ public class EventService {
         if (daysUntilDate > daysUntilNextWeek) {
             weekNum = (((daysUntilDate - daysUntilNextWeek) / 7 + 1) % user.getSettings().getEventsTrackWeeksNum()) + 1;
         }
-        return repository.findEventsByUserIdAndDayOfWeekAndWeekNum(user, date.getDayOfWeek().getValue(), (int) weekNum);
+        return repository.findEventsByUserIdAndDayOfWeekAndWeekNum(user, date.getDayOfWeek().getValue() - 1, (int) weekNum);
     }
 
     public List<Event> getSchedule(User user) {
