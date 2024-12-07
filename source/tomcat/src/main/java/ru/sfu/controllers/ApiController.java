@@ -2,6 +2,8 @@ package ru.sfu.controllers;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.User;
 import ru.sfu.db.services.DayNoteService;
@@ -17,6 +19,7 @@ import ru.sfu.util.JsonUtil;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @CrossOrigin
 @RestController
 @AllArgsConstructor
@@ -28,7 +31,7 @@ public class ApiController {
     private final DayNoteService dayNoteService;
 
     @GetMapping(value="/{year}/{month}/{day}")
-    @ResponseBody
+    //@ResponseBody
     public HomeDto getMainPageForThreeDays(@PathVariable String year,
                                            @PathVariable String month,
                                            @PathVariable String day) {
@@ -45,5 +48,4 @@ public class ApiController {
         User curUser = userService.findById(1L);
         return JsonUtil.mapList(taskService.filterByFields(curUser, name, details, status), TaskWindowDto.class);
     }
-
 }

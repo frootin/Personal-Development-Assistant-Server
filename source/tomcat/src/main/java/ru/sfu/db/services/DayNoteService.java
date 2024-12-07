@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.sfu.db.models.DayNote;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.DayNoteRepository;
+import ru.sfu.util.JsonUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +29,7 @@ public class DayNoteService {
     }
 
     public DayNote findByDateOrBefore(User user, LocalDate date) {
-        DayNote note = repository.findFirstByOrderByDayDescByUserIdAndDayLessThanEqual(user, date).get(0);
+        DayNote note = JsonUtil.getOrDefault(0, null, repository.findFirstByOrderByDayDescByUserIdAndDayLessThanEqual(user, date));
         return note;
     }
 }

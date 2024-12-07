@@ -108,4 +108,12 @@ public class JsonUtil {
         String dateString = json.get(fieldName).asText();
         return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
     }
+
+
+    public static <E> E getOrDefault(int index, E defaultValue, List<E> list) {
+        if (index < 0) {
+            throw new IllegalArgumentException("index is less than 0: " + index);
+        }
+        return index <= list.size() - 1 ? list.get(index) : defaultValue;
+    }
 }
