@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RepeatDto {
+    private long id; // если null, то создать новый повтор; если ид, то игнорировать
     @JsonProperty("repeat_interval")
     private int repeatInterval;
     private String term;

@@ -5,10 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.sfu.db.models.Category;
-import ru.sfu.db.models.Plan;
-import ru.sfu.db.models.Task;
-import ru.sfu.db.models.User;
+import org.springframework.transaction.annotation.Transactional;
+import ru.sfu.db.models.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,4 +33,10 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
 
     @Query("SELECT t FROM Task t JOIN t.plan p WHERE p.plan = :plan ORDER BY p.stepNumber")
     List<Task> findTaskByPlan(@Param("plan") Plan plan);
+    Long deleteByRepeatId_Id(Long repeatIdId);
+    @Transactional
+    void deleteByRepeatId(Repeat repeatId);
+    Long deleteByRepeatId_IdAndStartDateIsGreaterThan(Long repeatIdId, LocalDate startDate);
+    @Transactional
+    void deleteByRepeatIdAndStartDateIsGreaterThanEqual(Repeat repeatId, LocalDate startDate);
 }

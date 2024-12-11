@@ -30,11 +30,9 @@ import java.util.stream.Collectors;
 
 import ru.sfu.exceptions.*;
 import ru.sfu.formatters.DatetimeStringFormatter;
-import ru.sfu.objects.RepeatDto;
-import ru.sfu.objects.TaskWindowDto;
-import ru.sfu.util.JsonUtil;
 
 @AllArgsConstructor
+//@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 @Service
 public class TaskService {
     @PersistenceContext
@@ -321,5 +319,25 @@ public class TaskService {
             case Repeat.YEARLY -> tasks = createYearlyRepeatTasks(repeat);
         }
         repository.saveAll(tasks);
+    }
+
+    @Transactional
+    public void deleteInRepeatAfter(Long taskId) {
+        Task task = repository.findById(taskId).orElseThrow();
+        repository.deleteByRepeatIdAndStartDateIsGreaterThanEqual(task.getRepeatId(), task.getStartDate());
+    }
+
+    @Transactional
+    public void deleteAllInRepeat(Long taskId) {
+        Task task = repository.findById(taskId).orElseThrow();
+        repository.deleteByRepeatId(task.getRepeatId());
+    }
+
+    public void deleteRepeatedTasks(Long taskId, String regime) throws NoSuchTaskException {
+        switch (regime) {
+            case DeleteRegimes.DELETE_ONE -> delete(taskId);
+            case DeleteRegimes.DELETE_AFTER -> deleteInRepeatAfter(taskId);
+            case DeleteRegimes.DELETE_ALL -> deleteAllInRepeat(taskId);
+        }
     }
 }

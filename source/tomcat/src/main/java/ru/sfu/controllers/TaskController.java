@@ -67,8 +67,19 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable long id) throws NoSuchTaskException {
-        taskService.delete(id);
+    public void deleteTask(@PathVariable long id,
+                           @RequestParam(required = false) String regime) throws NoSuchTaskException {
+        if (regime == null) { taskService.delete(id); }
+        else {
+            taskService.deleteRepeatedTasks(id, regime);
+        }
+    }
+
+    @DeleteMapping
+    public void deleteRepeatTasks(@RequestParam(required = true) Long repeat,
+                                  @RequestParam(required = false) String details,
+                                  @RequestParam(required = false) Integer status) {
+
     }
 
     @PatchMapping("/{id}")
