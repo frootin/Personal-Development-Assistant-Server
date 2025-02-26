@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public.users
 CREATE TABLE IF NOT EXISTS public.user_settings
 (
     user_id bigint NOT NULL,
-    user_time_zone varchar,
+    user_timezone varchar NOT NULL check (now() at time zone user_timezone is not null),
     events_track_start_date date,
     events_track_weeks_num int,
     week_start_day varchar NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS public.repeats
     date_end date,
     time_start time,
     time_end time,
-    task_timezone varchar,
+    task_timezone varchar NOT NULL check (now() at time zone task_timezone is not null),
     repeat_term varchar NOT NULL,
     repeat_days int[],
     repeat_start date NOT NULL,
@@ -102,9 +102,10 @@ CREATE TABLE IF NOT EXISTS public.tasks
     date_end date,
     time_start time,
     time_end time,
-    task_timezone varchar,
+    task_timezone varchar NOT NULL check (now() at time zone task_timezone is not null),
     status integer NOT NULL DEFAULT 0,
-    done_by timestamp without time zone,
+    done_by_utc timestamp with time zone,
+    done_by_tmz timestamp without time zone,
     repeat_id bigint DEFAULT NULL,
     CONSTRAINT tasks_category_id_fkey FOREIGN KEY (category_id)
     REFERENCES public.categories (id) MATCH SIMPLE
@@ -177,3 +178,16 @@ CREATE TABLE IF NOT EXISTS public.diary_entries
        ON UPDATE NO ACTION
        ON DELETE CASCADE
 );
+
+CREATE FUNCTION last_upd_trig() RETURNS trigger
+   LANGUAGE plpgsql AS
+$$BEGIN
+   NEW.done_by_utc := current_timestamp;
+   NEW.done_by_tmz := NEW.done_by_utc at time zone NEW.task_timezone
+   RETURN NEW;
+END;$$;
+
+CREATE TRIGGER last_upd_trigger
+   BEFORE INSERT OR UPDATE ON tasks
+   FOR EACH ROW
+   EXECUTE PROCEDURE last_upd_trig();

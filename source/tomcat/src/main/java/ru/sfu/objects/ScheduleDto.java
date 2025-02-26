@@ -14,11 +14,4 @@ public class ScheduleDto {
     @JsonProperty("weeks_num")
     private int numberOfWeeks;
     private List<DaySchedule> days;
-    /**private DaySchedule monday;
-    private DaySchedule tuesday;
-    private DaySchedule wednesday;
-    private DaySchedule thursday;
-    private DaySchedule friday;
-    private DaySchedule saturday;
-    private DaySchedule sunday;*/
 }

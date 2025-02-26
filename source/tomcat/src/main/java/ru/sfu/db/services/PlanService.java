@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.sfu.db.models.Category;
-import ru.sfu.db.models.Plan;
-import ru.sfu.db.models.Task;
-import ru.sfu.db.models.User;
+import ru.sfu.db.models.*;
 import ru.sfu.db.repositories.PlanRepository;
 import ru.sfu.db.repositories.TaskPlanRepository;
 import ru.sfu.objects.CategoryDto;
@@ -87,5 +84,17 @@ public class PlanService {
         planDto.setDonePoints(doneSum);
         planDto.setTasks(JsonUtil.mapList(tasks, TaskDto.class));
         return planDto;
+    }
+
+    public void updatePlanInTask(Plan plan, Task task) {
+        if (plan == task.getPlan().getPlan()) {return;}
+        if (plan == null) {
+            taskPlanRepository.deleteByPlanAndTask(task.getPlan().getPlan(), task);
+        } else {
+            taskPlanRepository.deleteByPlanAndTask(task.getPlan().getPlan(), task);
+            long step = getNumberOfTasksInPLan(plan) + 1;
+            TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
+            taskPlanRepository.save(taskPlan);
+        }
     }
 }

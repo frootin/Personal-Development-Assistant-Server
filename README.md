@@ -45,10 +45,11 @@ mvn spring-boot:run
 ```
 ngrok config add-authtoken <token>
 ```
+4. Для удобства, сгенерируйте постоянный url для обращения.
 
 ### Запуск туннеля
 
-1. В cmd выполнить:
+1. В cmd выполнить (url = постоянная ссылка из вашего личного кабинета):
 ```
 ngrok http --url=opossum-viable-hopefully.ngrok-free.app 80
 ```

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -16,14 +17,17 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @NotNull
+    @Column(nullable = false)
     private String title;
-    @Column
+    @NotNull
+    @Column(nullable = false)
     private String color;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userId;
-    @Column(name = "on_watch")
+    @NotNull
+    @Column(name = "on_watch", nullable = false)
     private Boolean onWatch;
     @CreationTimestamp
     @Column(name = "created_at")
@@ -31,7 +35,7 @@ public class Category {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return 42;
     }
 
     @Override
@@ -43,6 +47,8 @@ public class Category {
         if (getClass() != obj.getClass())
             return false;
         Category other = (Category) obj;
-        return Objects.equals(id, other.getId());
+        if (id == null) {
+            return false;
+        } else return id.equals(other.id);
     }
 }

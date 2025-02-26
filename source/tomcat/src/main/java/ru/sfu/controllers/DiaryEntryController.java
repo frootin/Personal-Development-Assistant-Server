@@ -32,12 +32,14 @@ public class DiaryEntryController {
     @PostMapping
     public DiaryEntryDto createEntry(@RequestBody JsonNode json) {
         DiaryEntry note = diaryEntryService.save(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
+        if (note == null) return null;
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
     }
 
     @PutMapping
     public DiaryEntryDto updateEntry(@RequestBody JsonNode json) {
         DiaryEntry note = diaryEntryService.updateOrInsert(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
+        if (note == null) return null;
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
     }
 }

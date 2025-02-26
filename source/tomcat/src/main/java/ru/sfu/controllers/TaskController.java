@@ -62,7 +62,7 @@ public class TaskController {
     }
 
     @PutMapping
-    public TaskWindowDto updateTask(@RequestBody JsonNode json) {
+    public TaskWindowDto updateTask(@RequestBody JsonNode json) throws NoSuchTaskException {
         return HomeJsonFormatter.updateFromDetailedDto(taskService, planService, repeatService, json);
     }
 
@@ -75,19 +75,14 @@ public class TaskController {
         }
     }
 
-    @DeleteMapping
-    public void deleteRepeatTasks(@RequestParam(required = true) Long repeat,
-                                  @RequestParam(required = false) String details,
-                                  @RequestParam(required = false) Integer status) {
-
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<Task> patchTask(@PathVariable long id, @RequestBody JsonPatch patch) {
         try {
             Task task = taskService.findById(id);
             Task taskPatched = JsonUtil.applyPatch(patch, task, Task.class);
-            taskService.save(taskPatched);
+            Task task1 = taskService.save(taskPatched);
+            System.out.println(task1.getDoneByTmz());
+            System.out.println(task1.getDoneBy());
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

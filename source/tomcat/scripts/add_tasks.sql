@@ -1,5 +1,23 @@
 \connect personal_assistant
 
-INSERT INTO public.tasks_in_plans(task_id, plan_id, step_number)
-    VALUES (85, 1, 1),
-           (86, 1, 2);
+DROP TRIGGER last_upd_trigger ON tasks;
+
+DROP FUNCTION last_upd_trig();
+
+CREATE FUNCTION last_upd_trig() RETURNS trigger
+   LANGUAGE plpgsql AS
+$$BEGIN
+   IF NEW.status <> OLD.STATUS THEN
+      NEW.done_by_utc := current_timestamp;
+      NEW.done_by_tmz := NEW.done_by_utc at time zone NEW.task_timezone;
+   ELSE
+      NEW.done_by_utc := OLD.done_by_utc;
+      NEW.done_by_tmz := OLD.done_by_tmz;
+   END IF;
+   RETURN NEW;
+END;$$;
+
+CREATE TRIGGER last_upd_trigger
+   BEFORE UPDATE ON tasks
+   FOR EACH ROW
+   EXECUTE PROCEDURE last_upd_trig();

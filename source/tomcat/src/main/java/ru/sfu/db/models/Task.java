@@ -1,6 +1,8 @@
 package ru.sfu.db.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 @Entity
 @NoArgsConstructor
@@ -22,11 +25,13 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userId;
-    @Column(name = "task_name")
+    @NotBlank
+    @Column(name = "task_name", nullable = false)
     private String name;
     @Column(name="details")
     private String details;
-    @Column(name="estimate")
+    @NotNull
+    @Column(name="estimate", nullable = false)
     private int estimate;
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
@@ -41,10 +46,13 @@ public class Task {
     private LocalTime stopTime;
     @Column(name = "task_timezone")
     private String timezone;
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private int status;
-    @Column(name = "done_by")
-    private LocalDateTime doneBy;
+    @Column(name = "done_by_utc")
+    private Instant doneBy;
+    @Column(name = "done_by_tmz")
+    private LocalDateTime doneByTmz;
     @ManyToOne
     @JoinColumn(name = "repeat_id", referencedColumnName = "id", nullable = true)
     private Repeat repeatId;
@@ -65,7 +73,7 @@ public class Task {
     private Plan plan;*/
 
     public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
-                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy,
+                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, Instant doneBy,
                 Repeat repeatId) {
         this.userId = userId;
         this.name = name;
@@ -83,7 +91,7 @@ public class Task {
     }
 
     public Task(User userId, String name, String details, int estimate, Category categoryId, LocalDate startDate,
-                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, LocalDateTime doneBy) {
+                LocalDate stopDate, LocalTime startTime, LocalTime stopTime, String timezone, int status, Instant doneBy) {
         this.userId = userId;
         this.name = name;
         this.details = details;
@@ -105,7 +113,7 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String details, LocalDate startDate, LocalDate stopDate, Category categoryId, String timezone, int estimate, LocalDateTime doneBy, int status) {
+    public Task(String name, String details, LocalDate startDate, LocalDate stopDate, Category categoryId, String timezone, int estimate, Instant doneBy, int status) {
         this.name = name;
         this.details = details;
         this.startDate = startDate;
@@ -245,11 +253,11 @@ public class Task {
         return status;
     }
 
-    public LocalDateTime getDoneBy() {
+    public Instant getDoneBy() {
         return doneBy;
     }
 
-    public void setDoneBy(LocalDateTime doneBy) {
+    public void setDoneBy(Instant doneBy) {
         this.doneBy = doneBy;
     }
 
@@ -263,16 +271,14 @@ public class Task {
 
     public void setStatus(int status) {
         this.status = status;
-        if (status == 1) {
-            this.doneBy = LocalDateTime.now(ZoneOffset.UTC);
-        }
     }
 
-    @PreUpdate
-    public void updateDoneBy() {
-        if (this.status == 1) {
-            this.doneBy = LocalDateTime.now(ZoneOffset.UTC);
-        }
+    public LocalDateTime getDoneByTmz() {
+        return doneByTmz;
+    }
+
+    public void setDoneByTmz(LocalDateTime doneByTmz) {
+        this.doneByTmz = doneByTmz;
     }
 
     public Repeat getRepeatId() {

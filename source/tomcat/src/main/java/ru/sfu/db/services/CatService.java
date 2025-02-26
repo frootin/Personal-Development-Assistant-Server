@@ -27,7 +27,7 @@ public class CatService {
     }
 
     public List<Category> getCategoriesForUser(User user) {
-        return repository.findCategoriesByUserId(user, Sort.by(Sort.Direction.DESC, "onWatch"));
+        return repository.findCategoriesByUserId(user);
     }
 
     public List<Category> getActiveCategoriesForUser(User user) {

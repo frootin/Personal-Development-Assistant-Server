@@ -16,10 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -79,11 +76,14 @@ public class TaskService {
     }
 
     public List<Task> getDoneTasksForDate(User user, LocalDate date) {
-        return repository.findTaskByUserIdAndDoneByBetweenAndStartDateIsNot(user, date.atStartOfDay(), LocalDateTime.of(date, LocalTime.MAX), date);
+        return repository.findTaskByUserIdAndDoneByTmzBetweenAndDateIsNot(
+                user,
+                date.atStartOfDay(),
+                LocalDateTime.of(date, LocalTime.MAX), date);
     }
 
     public List<Task> getLateTasksForDate(User user, LocalDate date) {
-        return repository.findTaskByUserIdAndDoneByIsNullAndStopDateLessThan(user, date);
+        return repository.findTaskByUserIdAndStatusAndStopDateLessThan(user, Task.NOT_DONE_STATUS, date);
     }
 
     public List<Task> getFreeTasks(User user) {
@@ -112,11 +112,11 @@ public class TaskService {
     }
 
     public List<Task> getTasksInCategoryBetweenDates(Category category, LocalDate startDate, LocalDate endDate) {
-        return repository.findTaskByCategoryIdAndDoneByBetween(category, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX));
+        return repository.findTaskByCategoryIdAndDoneByTmzBetweenAndStatus(category, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), Task.DONE_STATUS);
     }
 
     public List<Task> getTasksBetweenDates(User user, LocalDate startDate, LocalDate endDate) {
-        return repository.findTaskByUserIdAndDoneByBetween(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), Sort.by(Sort.Direction.ASC, "doneBy"));
+        return repository.findTaskByUserIdAndDoneByTmzBetweenAndStatus(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), Task.DONE_STATUS, Sort.by(Sort.Direction.ASC, "doneBy"));
     }
 
     public Map<Category, List<Task>> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
@@ -125,7 +125,7 @@ public class TaskService {
         for (Category cat: categories) {
             categoryListMap.put(cat, new ArrayList<Task>());
         }
-        List<Task> tasks = repository.findTaskByUserIdAndDoneByBetweenAndInCategories(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), categories);
+        List<Task> tasks = repository.findTaskByUserIdAndDoneByTmzBetweenAndInCategories(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), categories);
         Map<Category, List<Task>> tasksByCategory = tasks.stream().collect(Collectors.groupingBy(item -> item.getCategoryId()));
         tasksByCategory.forEach((key, value) -> categoryListMap.merge(key, value, (v1, v2) -> v2));
         return categoryListMap;
@@ -162,7 +162,7 @@ public class TaskService {
         LocalDate counterDate = repeat.getStartDate();
         LocalDate stopDate = repeat.getStopDate();
         counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        if (repeat.getNumberOfRepeats() != 0) {
+        if (repeat.getNumberOfRepeats() > 0) {
             Integer currentRepeatsNum = 1;
             while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
                 for (int i: repeat.getRepeatDays()) {
@@ -184,7 +184,7 @@ public class TaskService {
         if (stopDate == null) {
             stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
         }
-        while (stopDate.isAfter(counterDate)) {
+        while (!stopDate.isBefore(counterDate)) {
             for (int i: repeat.getRepeatDays()) {
                 localStartDate = counterDate.plusDays(i);
                 localEndDate = null;
@@ -204,8 +204,7 @@ public class TaskService {
         List<Task> tasks = new ArrayList<>();
         LocalDate counterDate = repeat.getRepeatStart();
         LocalDate stopDate = repeat.getRepeatEnd();
-        System.out.println("we're here");
-        if (repeat.getNumberOfRepeats() != 0) {
+        if (repeat.getNumberOfRepeats() > 0) {
             System.out.println(repeat.getNumberOfRepeats());
             for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
                 localStartDate = counterDate.plusDays(1);
@@ -220,11 +219,7 @@ public class TaskService {
         if (stopDate == null) {
             stopDate = LocalDate.of(counterDate.getYear(), 12, 31);
         }
-        System.out.println(counterDate.toString());
-        System.out.println(stopDate.toString());
-        System.out.println(stopDate.isAfter(counterDate));
         while (stopDate.isAfter(counterDate)) {
-            System.out.println("we're in the while counterdate");
             localStartDate = counterDate.plusDays(1);
             localEndDate = null;
             if (repeat.getStopDate() != null) {

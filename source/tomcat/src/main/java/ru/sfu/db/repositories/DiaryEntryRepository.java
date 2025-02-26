@@ -8,6 +8,7 @@ import ru.sfu.db.models.Category;
 import ru.sfu.db.models.DiaryEntry;
 import ru.sfu.db.models.User;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 @Repository

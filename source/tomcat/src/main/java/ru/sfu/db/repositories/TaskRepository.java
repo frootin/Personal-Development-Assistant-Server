@@ -18,18 +18,26 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTaskByUserIdAndStartDateOrStopDate(@Param("user_id") User userId,
                                                       @Param("start") LocalDate taskStart,
                                                       @Param("stop") LocalDate taskStop);
-    List<Task> findTaskByUserIdAndDoneByBetweenAndStartDateIsNot(User user, LocalDateTime dayStart, LocalDateTime dayEnd, LocalDate taskStart);
+    List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStartDateIsNot(User user, LocalDateTime dayStart, LocalDateTime dayEnd, LocalDate taskStart);
+    @Query(
+            value = "SELECT t FROM Task t WHERE t.userId = :user_id AND t.status = 1 AND t.doneByTmz BETWEEN :dayStart AND :dayEnd AND ((t.startDate <> :date AND t.stopDate <> :date) OR (t.startDate IS NULL AND t.stopDate <> :date) OR (t.startDate <> :date AND t.stopDate IS NULL) OR (t.startDate IS NULL AND t.stopDate IS NULL))"
+    )
+    List<Task> findTaskByUserIdAndDoneByTmzBetweenAndDateIsNot(@Param("user_id") User user,
+                                                               @Param("dayStart") LocalDateTime dayStart,
+                                                               @Param("dayEnd") LocalDateTime dayEnd,
+                                                               @Param("date") LocalDate date);
+    List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
     List<Task> findTaskByUserIdAndStopDateIsNullAndStatusIs(User user, int status);
-    List<Task> findTaskByUserIdAndDoneByIsNullAndStopDateLessThan(User user, LocalDate today);
+    List<Task> findTaskByUserIdAndStatusAndStopDateLessThan(User user, int status, LocalDate today);
     List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThan(User user, LocalDate today, LocalDate stopToday);
     List<Task> findTaskByUserId(User user);
-    List<Task> findTaskByCategoryIdAndDoneByBetween(Category category, LocalDateTime dayStart, LocalDateTime dayEnd);
-    List<Task> findTaskByUserIdAndDoneByBetween(User user, LocalDateTime dayStart, LocalDateTime dayEnd, Sort sort);
-    @Query("SELECT t FROM Task t WHERE t.userId = :user_id AND t.doneBy BETWEEN :start AND :stop AND t.categoryId IN :categories")
-    List<Task> findTaskByUserIdAndDoneByBetweenAndInCategories(@Param("user_id") User user,
-                                                               @Param("start") LocalDateTime dayStart,
-                                                               @Param("stop") LocalDateTime dayEnd,
-                                                               @Param("categories") List<Category> categories);
+    List<Task> findTaskByCategoryIdAndDoneByTmzBetweenAndStatus(Category category, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
+    List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status, Sort sort);
+    @Query("SELECT t FROM Task t WHERE t.userId = :user_id AND t.status = 1 AND t.doneByTmz BETWEEN :start AND :stop AND t.categoryId IN :categories")
+    List<Task> findTaskByUserIdAndDoneByTmzBetweenAndInCategories(@Param("user_id") User user,
+                                                                  @Param("start") LocalDateTime dayStart,
+                                                                  @Param("stop") LocalDateTime dayEnd,
+                                                                  @Param("categories") List<Category> categories);
 
     @Query("SELECT t FROM Task t JOIN t.plan p WHERE p.plan = :plan ORDER BY p.stepNumber")
     List<Task> findTaskByPlan(@Param("plan") Plan plan);

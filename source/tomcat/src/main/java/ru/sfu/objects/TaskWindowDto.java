@@ -1,5 +1,6 @@
 package ru.sfu.objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -22,7 +23,6 @@ import ru.sfu.util.JsonUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -47,11 +47,13 @@ public class TaskWindowDto {
     private LocalDate stopDate;
 
     @JsonProperty("start_time")
+    @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime startTime;
 
     @JsonProperty("stop_time")
+    @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime stopTime;
@@ -67,9 +69,10 @@ public class TaskWindowDto {
     private String timezone;
 
     @JsonProperty("done_by")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime doneBy;
+    private LocalDateTime doneByTmz;
 
     @JsonProperty("plan")
     private PlanDto planDto;

@@ -23,7 +23,8 @@ public class UserSettings {
     private LocalDate eventsTrackStartDate;
     @Column(name = "events_track_weeks_num")
     private int eventsTrackWeeksNum;
-    //private String timezone;
+    @Column(name = "user_timezone")
+    private String userTimezone;
 
     @Override
     public int hashCode() {

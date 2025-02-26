@@ -1,5 +1,6 @@
 package ru.sfu.objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -31,11 +32,13 @@ public class EventDetailsDto {
     private String eventFormat;;
 
     @JsonProperty("start_time")
+    @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime startTime;
 
     @JsonProperty("stop_time")
+    @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime stopTime;

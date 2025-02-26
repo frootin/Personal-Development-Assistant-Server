@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +27,8 @@ public class Plan {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userId;
-    @Column(name = "plan_name")
+    @NotNull
+    @Column(name = "plan_name", nullable = false)
     private String name;
     @Column
     private String details;
@@ -33,7 +36,8 @@ public class Plan {
     private LocalDate startDate;
     @Column(name = "date_end")
     private LocalDate stopDate;
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private int status;
     @OneToMany(
             mappedBy = "plan",

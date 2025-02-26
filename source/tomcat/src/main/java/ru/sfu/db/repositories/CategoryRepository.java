@@ -11,7 +11,9 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Long> {
-    List<Category> findCategoriesByUserId(User user, Sort sort);
+    @Query("SELECT c FROM Category c WHERE c.userId = :user_id ORDER BY c.onWatch DESC")
+    List<Category> findCategoriesByUserId(@Param("user_id") User user);
     @Query("SELECT c FROM Category c WHERE c.userId = :user_id AND c.onWatch = true")
     List<Category> findCategoriesByUserIdAndOnWatchIsTrue(@Param("user_id") User user);
+    List<Category> findCategoriesByUserIdAndOnWatch(User user, Boolean onWatch, Sort sort);
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.TypeDef;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -29,11 +31,13 @@ public class Repeat {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User userId;
-    @Column(name = "task_name")
+    @NotBlank
+    @Column(name = "task_name", nullable = false)
     private String name;
     @Column(name="details")
     private String details;
-    @Column(name="estimate")
+    @NotNull
+    @Column(name="estimate", nullable = false)
     private int estimate;
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
@@ -48,11 +52,13 @@ public class Repeat {
     private LocalTime stopTime;
     @Column(name = "task_timezone")
     private String timezone;
-    @Column(name = "repeat_start")
+    @NotNull
+    @Column(name = "repeat_start", nullable = false)
     private LocalDate repeatStart;
     @Column(name = "repeat_end")
     private LocalDate repeatEnd;
-    @Column(name = "repeat_term")
+    @NotNull
+    @Column(name = "repeat_term", nullable = false)
     private String repeatTerm;
     //@Type(ListArrayType.class)
     @Column(
@@ -62,7 +68,8 @@ public class Repeat {
     private int[] repeatDays;
     @Column(name = "number_of_repeats")
     private Integer numberOfRepeats;
-    @Column(name = "repeat_interval")
+    @NotNull
+    @Column(name = "repeat_interval", nullable = false)
     private Integer repeatInterval;
     @ManyToOne
     @JoinColumn(name = "plan_id", referencedColumnName = "id")

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import java.time.Instant;
 
 @Entity
 @Data
@@ -16,11 +18,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @NotBlank
+    @Column(nullable = false)
     private String email;
-    @Column
+    @NotBlank
+    @Column(nullable = false)
     private String username;
-    @Column(name="pass_hash")
+    @NotBlank
+    @Column(name="pass_hash", nullable = false)
     private String passhash;
     @Column(name = "display_name")
     private String displayName;
@@ -28,21 +33,22 @@ public class User {
     private String userpic;
     @Column
     private String interests;
+    @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     @EqualsAndHashCode.Exclude
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy="userId")
     private UserSettings settings;
 
-    public User(String email, String username, String passhash, String displayName, String userpic, String interests, LocalDateTime createdAt) {
+    public User(String email, String username, String passhash, String displayName, String userpic, String interests) {
         this.email = email;
         this.username = username;
         this.passhash = passhash;
         this.displayName = displayName;
         this.userpic = userpic;
         this.interests = interests;
-        this.createdAt = createdAt;
+        //this.createdAt = createdAt;
     }
 
     @Override
