@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.sfu.db.models.DiaryEntry;
 import ru.sfu.db.models.User;
 import ru.sfu.db.repositories.DiaryEntryRepository;
+import ru.sfu.exceptions.EmptyDiaryEntryException;
 
 import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
@@ -21,7 +22,8 @@ public class DiaryEntryService {
         this.repository = repository;
     }
 
-    public DiaryEntry save(DiaryEntry diaryEntry) {
+    public DiaryEntry save(DiaryEntry diaryEntry) throws EmptyDiaryEntryException  {
+        if (diaryEntry.getText().isBlank()) throw new EmptyDiaryEntryException();
         return repository.save(diaryEntry);
     }
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.sfu.db.models.DiaryEntry;
 import ru.sfu.db.services.DiaryEntryService;
 import ru.sfu.db.services.UserService;
+import ru.sfu.exceptions.EmptyDiaryEntryException;
 import ru.sfu.objects.DiaryEntryDto;
 import ru.sfu.util.JsonUtil;
 
@@ -30,7 +31,7 @@ public class DiaryEntryController {
     }
 
     @PostMapping
-    public DiaryEntryDto createEntry(@RequestBody JsonNode json) {
+    public DiaryEntryDto createEntry(@RequestBody JsonNode json) throws EmptyDiaryEntryException {
         DiaryEntry note = diaryEntryService.save(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
         if (note == null) return null;
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
