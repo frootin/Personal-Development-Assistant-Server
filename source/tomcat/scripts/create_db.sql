@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.users
 
 CREATE TABLE IF NOT EXISTS public.user_settings
 (
+    id bigserial PRIMARY KEY,
     user_id bigint NOT NULL,
     user_timezone varchar NOT NULL check (now() at time zone user_timezone is not null),
     events_track_start_date date,
@@ -183,7 +184,7 @@ CREATE FUNCTION last_upd_trig() RETURNS trigger
    LANGUAGE plpgsql AS
 $$BEGIN
    NEW.done_by_utc := current_timestamp;
-   NEW.done_by_tmz := NEW.done_by_utc at time zone NEW.task_timezone
+   NEW.done_by_tmz := NEW.done_by_utc at time zone NEW.task_timezone;
    RETURN NEW;
 END;$$;
 

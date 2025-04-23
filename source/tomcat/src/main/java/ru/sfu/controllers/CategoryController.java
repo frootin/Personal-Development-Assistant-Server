@@ -25,6 +25,8 @@ public class CategoryController {
     public CategoryDto createCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
         assert category != null;
+        System.out.println(category.getUserId());
+        System.out.println(category);
         return JsonUtil.ModelToDto(categoryService.save(category), CategoryDto.class);
     }
 
