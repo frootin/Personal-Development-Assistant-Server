@@ -29,7 +29,7 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
     List<Task> findTaskByUserIdAndStopDateIsNullAndStatusIs(User user, int status);
     List<Task> findTaskByUserIdAndStatusAndStopDateLessThan(User user, int status, LocalDate today);
-    List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThan(User user, LocalDate today, LocalDate stopToday);
+    List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThanAndStatus(User user, LocalDate today, LocalDate stopToday, int status);
     List<Task> findTaskByUserId(User user);
     List<Task> findTaskByCategoryIdAndDoneByTmzBetweenAndStatus(Category category, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
     List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status, Sort sort);
