@@ -76,7 +76,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Task> patchTask(@PathVariable long id, @RequestBody JsonPatch patch) {
+    public ResponseEntity<Task> patchTask(@PathVariable long id, @RequestBody JsonPatch patch) throws JsonPatchException, JsonProcessingException {
         try {
             Task task = taskService.findById(id);
             Task taskPatched = JsonUtil.applyPatch(patch, task, Task.class);
@@ -84,9 +84,10 @@ public class TaskController {
             System.out.println(task1.getDoneByTmz());
             System.out.println(task1.getDoneBy());
             return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (JsonPatchException | JsonProcessingException e) {
+        } /**catch (JsonPatchException | JsonProcessingException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (NoSuchTaskException e) {
+        } */catch (NoSuchTaskException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

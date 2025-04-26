@@ -1,6 +1,9 @@
 package ru.sfu.util;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
@@ -100,6 +103,8 @@ public class JsonUtil {
 
     public static <S> S applyPatch(JsonPatch patch, S targetCustomer, Class<S> targetClass) throws JsonPatchException, JsonProcessingException {
         ObjectMapper objectMapper = getConfiguredObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         JsonNode patched = patch.apply(objectMapper.convertValue(targetCustomer, JsonNode.class));
         return objectMapper.treeToValue(patched, targetClass);
     }

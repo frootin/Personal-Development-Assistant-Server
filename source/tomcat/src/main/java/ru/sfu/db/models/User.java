@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String username;
     @NotBlank
     @Column(name="pass_hash", nullable = false)
-    private String passhash;
+    private String password;
     @Column(name = "display_name")
     private String displayName;
     @Column
@@ -44,10 +44,10 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL, mappedBy="userId", orphanRemoval = true)
     private UserSettings settings;
 
-    public User(String email, String username, String passhash, String displayName, String userpic, String interests) {
+    public User(String email, String username, String password, String displayName, String userpic, String interests) {
         this.email = email;
         this.username = username;
-        this.passhash = passhash;
+        this.password = password;
         this.displayName = displayName;
         this.userpic = userpic;
         this.interests = interests;
@@ -70,7 +70,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passhash;
+        return password;
     }
 
     @Override

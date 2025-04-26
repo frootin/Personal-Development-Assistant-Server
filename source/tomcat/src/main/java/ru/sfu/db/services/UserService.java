@@ -42,7 +42,7 @@ public class UserService {
         if (!registerUserDto.getPassword().equals(registerUserDto.getRepeatPassword())) {
             throw new PasswordNoMatchException();
         }
-        newUser.setPasshash(bCryptPasswordEncoder.encode(registerUserDto.getPassword()));
+        newUser.setPassword(bCryptPasswordEncoder.encode(registerUserDto.getPassword()));
         newUser.setEmail(registerUserDto.getEmail());
         newUser.setUsername(registerUserDto.getUsername());
         newUser.setDisplayName(registerUserDto.getUsername());
@@ -57,7 +57,7 @@ public class UserService {
 
     public User saveUser(User newUser) throws UsernameAlreadyExistsException {
         try {
-            newUser.setPasshash(
+            newUser.setPassword(
                     bCryptPasswordEncoder.encode(newUser.getPassword())
             );
             //Username has to be unique (exception)
