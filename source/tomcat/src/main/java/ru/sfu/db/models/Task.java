@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 @Entity
@@ -63,6 +64,12 @@ public class Task {
             orphanRemoval = true
     )
     private TaskPlan plan;
+
+    @Formula("(SELECT COUNT(*) FROM tasks WHERE tasks.repeat_id = repeat_id)")
+    private long overallRepeats;
+
+    @Formula("(SELECT COUNT(*) FROM tasks WHERE tasks.repeat_id = repeat_id AND tasks.status = 1)")
+    private long doneRepeats;
     /**
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.PERSIST)
@@ -287,5 +294,13 @@ public class Task {
 
     public void setRepeatId(Repeat repeatId) {
         this.repeatId = repeatId;
+    }
+
+    public long getOverallRepeats() {
+        return overallRepeats;
+    }
+
+    public long getDoneRepeats() {
+        return doneRepeats;
     }
 }

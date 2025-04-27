@@ -18,4 +18,8 @@ public class TaskDto {
     @JsonProperty("stop_time")
     private String stopTime;
     private int status;
+    @JsonProperty("overall_repeats")
+    private long overallRepeats;
+    @JsonProperty("done_repeats")
+    private long doneRepeats;
 }

@@ -119,6 +119,14 @@ public class TaskService {
         return repository.findTaskByUserIdAndDoneByTmzBetweenAndStatus(user, startDate.atStartOfDay(), LocalDateTime.of(endDate, LocalTime.MAX), Task.DONE_STATUS, Sort.by(Sort.Direction.ASC, "doneBy"));
     }
 
+    public Long getNumberOfTasksInRepeat(Task task) {
+        return repository.getNumberOfTasksFromRepeat(task.getRepeatId());
+    }
+
+    public Long getNumberOfDoneTasksInRepeat(Task task) {
+        return repository.getNumberOfTasksFromRepeatWithStatus(task.getRepeatId(), Task.DONE_STATUS);
+    }
+
     public Map<Category, List<Task>> getTasksBetweenDatesInActive(User user, LocalDate startDate, LocalDate endDate) {
         List<Category> categories = categoryRepository.findCategoriesByUserIdAndOnWatchIsTrue(user);
         Map<Category, List<Task>> categoryListMap = new HashMap<>();

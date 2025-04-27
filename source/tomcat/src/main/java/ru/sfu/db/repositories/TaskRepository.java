@@ -47,4 +47,11 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     Long deleteByRepeatId_IdAndStartDateIsGreaterThan(Long repeatIdId, LocalDate startDate);
     @Transactional
     void deleteByRepeatIdAndStartDateIsGreaterThanEqual(Repeat repeatId, LocalDate startDate);
+
+    @Query("SELECT COUNT(*) FROM Task t WHERE t.repeatId = :repeat AND t.status = :status")
+    Long getNumberOfTasksFromRepeatWithStatus(@Param("repeat") Repeat repeat,
+                                              @Param("status") int status);
+
+    @Query("SELECT COUNT(*) FROM Task t WHERE t.repeatId = :repeat")
+    Long getNumberOfTasksFromRepeat(@Param("repeat") Repeat repeat);
 }
