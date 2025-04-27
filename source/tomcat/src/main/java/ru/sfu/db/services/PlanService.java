@@ -87,11 +87,25 @@ public class PlanService {
     }
 
     public void updatePlanInTask(Plan plan, Task task) {
-        if (plan == task.getPlan().getPlan()) {return;}
+        System.out.println("Plan" + plan);
+        if (task.getPlan() == null) {
+            long step = getNumberOfTasksInPLan(plan) + 1;
+            TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
+            taskPlanRepository.save(taskPlan);
+            System.out.println("Update plan for task with no plan");
+            return;
+        }
+        if (plan == task.getPlan().getPlan()) {
+            System.out.println("Do not update task's plan as it is the same");
+            return;
+        }
         if (plan == null) {
-            taskPlanRepository.deleteByPlanAndTask(task.getPlan().getPlan(), task);
+            System.out.println("Delete task's plan");
+            taskPlanRepository.deleteByTaskPlanId(task, task.getPlan().getPlan());
         } else {
-            taskPlanRepository.deleteByPlanAndTask(task.getPlan().getPlan(), task);
+            System.out.println("Update task's plan");
+            System.out.println(task.getPlan().getPlan().getName());
+            taskPlanRepository.deleteByTaskPlanId(task, task.getPlan().getPlan());
             long step = getNumberOfTasksInPLan(plan) + 1;
             TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
             taskPlanRepository.save(taskPlan);
