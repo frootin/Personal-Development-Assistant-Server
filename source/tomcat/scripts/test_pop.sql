@@ -1,4 +1,3 @@
 \connect personal_assistant
 
-INSERT INTO public.users(email, username, pass_hash, display_name, userpic, interests, created_at)
-    VALUES ('user6@gmail.com', 'user6', 'df34hvddg678ccvv', 'Васил', 'link', 'интересно', NOW()::timestamp);
+SELECT id, task_name, time_start, time_end, status FROM tasks WHERE (date_start < CURRENT_DATE OR date_start IS NULL) AND 0 < (date_end - CURRENT_DATE) AND (date_end - CURRENT_DATE) < 3;

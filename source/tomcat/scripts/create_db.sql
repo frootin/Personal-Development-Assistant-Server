@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS public.user_settings
     events_track_weeks_num int,
     week_start_day varchar NOT NULL,
     show_event_schedule boolean NOT NULL DEFAULT true,
+    days_to_deadline_soon int NOT NULL DEFAULT 3,
     CONSTRAINT user_settings_user_id_fkey FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION

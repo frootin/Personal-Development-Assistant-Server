@@ -91,7 +91,8 @@ public class TaskService {
     }
 
     public List<Task> getTasksOnDeadline(User user, LocalDate date) {
-        return repository.findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThanAndStatus(user, date, date, Task.NOT_DONE_STATUS);
+        System.out.println(date.minusDays(user.getSettings().getDaysToDeadlineSoon()));
+        return repository.findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThanAndStatus(user, date, Task.NOT_DONE_STATUS, user.getSettings().getDaysToDeadlineSoon());
     }
 
     public void addTaskToPlan(Task task, Plan plan, long step) {

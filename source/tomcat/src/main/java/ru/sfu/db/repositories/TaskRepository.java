@@ -29,7 +29,12 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
     List<Task> findTaskByUserIdAndStopDateIsNullAndStatusIs(User user, int status);
     List<Task> findTaskByUserIdAndStatusAndStopDateLessThan(User user, int status, LocalDate today);
-    List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThanAndStatus(User user, LocalDate today, LocalDate stopToday, int status);
+    //@Query(value = "SELECT t FROM Task t WHERE t.userId = :user_id AND (t.startDate < :today OR t.startDate IS NULL) AND 0 < (t.stopDate - :today) AND (t.stopDate - :today) < :deadline_start AND t.status = :status")
+    @Query(value = "SELECT * FROM tasks WHERE user_id = :user_id AND (date_start < :today OR date_start IS NULL) AND 0 < (date_end - :today) AND (date_end - :today) <= :deadline_start AND status = :status", nativeQuery = true)
+    List<Task> findTaskByUserIdAndStartDateIsLessThanAndStopDateIsGreaterThanAndStatus(@Param("user_id") User user,
+                                                                                       @Param("today") LocalDate today,
+                                                                                       @Param("status") int status,
+                                                                                       @Param("deadline_start") int deadlineDate);
     List<Task> findTaskByUserId(User user);
     List<Task> findTaskByCategoryIdAndDoneByTmzBetweenAndStatus(Category category, LocalDateTime dayStart, LocalDateTime dayEnd, int status);
     List<Task> findTaskByUserIdAndDoneByTmzBetweenAndStatus(User user, LocalDateTime dayStart, LocalDateTime dayEnd, int status, Sort sort);

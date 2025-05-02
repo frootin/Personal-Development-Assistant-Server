@@ -30,6 +30,7 @@ public class UserSettings {
     private String weekStartDay;
     @Column(name = "show_event_schedule")
     private Boolean showEventSchedule;
+    private int daysToDeadlineSoon;
 
     public UserSettings(User userId, String userTimezone) {
         this.userId = userId;
