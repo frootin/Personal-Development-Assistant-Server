@@ -101,6 +101,7 @@ public class HomeJsonFormatter {
             planService.updatePlanInTask(plan, task);
         } else {
             task = taskService.findById(task.getId());
+            if (task.getPlan() == null) return JsonUtil.ModelToDto(task, TaskWindowDto.class);
             planService.updatePlanInTask(null, task);
         }
         return JsonUtil.ModelToDto(task, TaskWindowDto.class);

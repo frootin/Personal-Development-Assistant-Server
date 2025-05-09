@@ -88,7 +88,7 @@ public class PlanService {
 
     public void updatePlanInTask(Plan plan, Task task) {
         System.out.println("Plan" + plan);
-        if (task.getPlan() == null) {
+        if (task.getPlan() == null && plan != null) {
             long step = getNumberOfTasksInPLan(plan) + 1;
             TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
             taskPlanRepository.save(taskPlan);
