@@ -65,9 +65,11 @@ public class Task {
     )
     private TaskPlan plan;
 
+    @Transient
     @Formula("(SELECT COUNT(*) FROM tasks WHERE tasks.repeat_id = repeat_id)")
     private long overallRepeats;
 
+    @Transient
     @Formula("(SELECT COUNT(*) FROM tasks WHERE tasks.repeat_id = repeat_id AND tasks.status = 1)")
     private long doneRepeats;
     /**
