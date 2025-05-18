@@ -39,8 +39,9 @@ public class SpringBootApp {
         return new BCryptPasswordEncoder();
     }
 
+    /**
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 }

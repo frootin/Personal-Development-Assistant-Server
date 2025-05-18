@@ -8,9 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import ru.sfu.db.repositories.UserRepository;
 
 @EnableWebSecurity
@@ -21,16 +26,39 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(
+        /**auth.inMemoryAuthentication()
+                .withUser("user").password("{bcrypt}password").roles("USER")
+                /**.and()
+                .withUser("admin").password("{noop}password").roles("ADMIN")*/;
+        /**auth
+                .userDetailsService(
                 username -> userRepo.findByEmail(username)
                         .orElseThrow(
-                                () -> new UsernameNotFoundException("User " + username + " not found.")));
+                                () -> new UsernameNotFoundException("User " + username + " not found.")));*/
     }
 
-    /**@Bean
+    @Bean
+    public UserDetailsService userDetailsService() {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        UserDetails user = User.withUsername("user")
+                .password(encoder.encode("user"))
+                .roles("USER").build();
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(user);
+        return manager;
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }*/
+    }
+
+    @Autowired
+    public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.jdbcAuthentication().passwordEncoder(new BCryptPasswordEncoder());
+
+    }
 
     @Override
     @Bean

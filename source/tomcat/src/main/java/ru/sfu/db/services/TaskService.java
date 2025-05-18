@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import ru.sfu.exceptions.*;
 import ru.sfu.formatters.DatetimeStringFormatter;
+import ru.sfu.objects.StorageSearchDto;
 
 @AllArgsConstructor
 //@Scope(proxyMode = ScopedProxyMode.INTERFACES)
@@ -52,6 +53,17 @@ public class TaskService {
     }
 
     public Task save(Task task) {
+        if (task.getStartDate() != null & task.getStopDate() != null) {
+            if (task.getStartDate().isAfter(task.getStopDate())) {
+                return null;
+            }
+            if (task.getStartDate().equals(task.getStopDate()) &
+                    task.getStartTime() != null &
+                    task.getStopTime() != null) {
+                if (task.getStartTime().isAfter(task.getStopTime())) return null;
+            }
+        }
+        if (task.getEstimate() > 100) return null;
         return repository.save(task);
     }
 
@@ -164,12 +176,57 @@ public class TaskService {
         return session.createQuery(cq.where(finalPredicate)).getResultList();
     }
 
+    public List<Task> filterForStorage(User user, StorageSearchDto searchDto) {
+        List<Predicate> predicates = new ArrayList<>();
+        Session session = getSession();
+        CriteriaQuery<Task> cq = session.getCriteriaBuilder().createQuery(Task.class);
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        Root<Task> task = cq.from(Task.class);
+        predicates.add(criteriaBuilder.equal(task.get("userId"), user));
+
+        if (searchDto.getText() != null) {
+            //predicates.add(criteriaBuilder.like(task.get("name"), "%" + text + "%"));
+            predicates.add(criteriaBuilder.or(criteriaBuilder.like(task.get("name"), "%" + searchDto.getText() + "%"), criteriaBuilder.like(task.get("details"), "%" + searchDto.getText() + "%")));
+        }
+
+        if (searchDto.getStartDate() != null) {
+            predicates.add(criteriaBuilder.or(criteriaBuilder.greaterThanOrEqualTo(task.get("startDate"), searchDto.getStartDate()), criteriaBuilder.greaterThanOrEqualTo(task.get("stopDate"), searchDto.getStartDate())));
+        }
+
+        if (searchDto.getStopDate() != null) {
+            predicates.add(criteriaBuilder.or(criteriaBuilder.lessThanOrEqualTo(task.get("startDate"), searchDto.getStopDate()), criteriaBuilder.lessThanOrEqualTo(task.get("stopDate"), searchDto.getStopDate())));
+        }
+
+        if (searchDto.getDoneStartDate() != null) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(task.get("doneByTmz"), searchDto.getDoneStartDate().atStartOfDay()));
+        }
+
+        if (searchDto.getDoneStopDate() != null) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(task.get("doneByTmz"), LocalDateTime.of(searchDto.getDoneStopDate(), LocalTime.MAX)));
+        }
+
+        if (searchDto.getMinPoints() != null) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(task.get("estimate"), searchDto.getMinPoints()));
+        }
+
+        if (searchDto.getMaxPoints() != null) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(task.get("estimate"), searchDto.getMaxPoints()));
+        }
+
+        if (searchDto.getStatus() != null) {
+            predicates.add(criteriaBuilder.equal(task.get("status"), searchDto.getStatus()));
+        }
+        Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+
+        return session.createQuery(cq.where(finalPredicate)).getResultList();
+    }
+
     public List<Task> createWeeklyRepeatTasks(Repeat repeat) {
         LocalDate localStartDate;
         LocalDate localEndDate;
         List<Task> tasks = new ArrayList<>();
-        LocalDate counterDate = repeat.getStartDate();
-        LocalDate stopDate = repeat.getStopDate();
+        LocalDate counterDate = repeat.getRepeatStart();
+        LocalDate stopDate = repeat.getRepeatEnd();
         counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         if (repeat.getNumberOfRepeats() > 0) {
             Integer currentRepeatsNum = 1;
@@ -183,7 +240,11 @@ public class TaskService {
                     if (repeat.getStopDate() != null) {
                         localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                     }
-                    tasks.add(new Task(repeat, localStartDate, localEndDate));
+                    Task newTask = new Task(repeat, localStartDate, localEndDate);
+                    tasks.add(newTask);
+                    if (repeat.getPlanId() != null) {
+                        addTaskToPlan(newTask, repeat.getPlanId());
+                    }
                     currentRepeatsNum++;
                 }
                 counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
@@ -200,7 +261,11 @@ public class TaskService {
                 if (repeat.getStopDate() != null) {
                     localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                 }
-                tasks.add(new Task(repeat, localStartDate, localEndDate));
+                Task newTask = new Task(repeat, localStartDate, localEndDate);
+                tasks.add(newTask);
+                if (repeat.getPlanId() != null) {
+                    addTaskToPlan(newTask, repeat.getPlanId());
+                }
             }
             counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
         }
@@ -221,7 +286,11 @@ public class TaskService {
                 if (repeat.getStopDate() != null) {
                     localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                 }
-                tasks.add(new Task(repeat, localStartDate, localEndDate));
+                Task newTask = new Task(repeat, localStartDate, localEndDate);
+                tasks.add(newTask);
+                if (repeat.getPlanId() != null) {
+                    addTaskToPlan(newTask, repeat.getPlanId());
+                }
             }
             return tasks;
         }
@@ -234,7 +303,11 @@ public class TaskService {
             if (repeat.getStopDate() != null) {
                 localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
             }
-            tasks.add(new Task(repeat, localStartDate, localEndDate));
+            Task newTask = new Task(repeat, localStartDate, localEndDate);
+            tasks.add(newTask);
+            if (repeat.getPlanId() != null) {
+                addTaskToPlan(newTask, repeat.getPlanId());
+            }
             counterDate = counterDate.plusDays(1);
         }
         return tasks;
@@ -258,7 +331,11 @@ public class TaskService {
                     if (repeat.getStopDate() != null) {
                         localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                     }
-                    tasks.add(new Task(repeat, localStartDate, localEndDate));
+                    Task newTask = new Task(repeat, localStartDate, localEndDate);
+                    tasks.add(newTask);
+                    if (repeat.getPlanId() != null) {
+                        addTaskToPlan(newTask, repeat.getPlanId());
+                    }
                     currentRepeatsNum++;
                 }
                 counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
@@ -275,7 +352,11 @@ public class TaskService {
                 if (repeat.getStopDate() != null) {
                     localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                 }
-                tasks.add(new Task(repeat, localStartDate, localEndDate));
+                Task newTask = new Task(repeat, localStartDate, localEndDate);
+                tasks.add(newTask);
+                if (repeat.getPlanId() != null) {
+                    addTaskToPlan(newTask, repeat.getPlanId());
+                }
             }
             counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
         }
@@ -295,7 +376,11 @@ public class TaskService {
                 if (repeat.getStopDate() != null) {
                     localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
                 }
-                tasks.add(new Task(repeat, localStartDate, localEndDate));
+                Task newTask = new Task(repeat, localStartDate, localEndDate);
+                tasks.add(newTask);
+                if (repeat.getPlanId() != null) {
+                    addTaskToPlan(newTask, repeat.getPlanId());
+                }
             }
             return tasks;
         }
@@ -308,7 +393,11 @@ public class TaskService {
             if (repeat.getStopDate() != null) {
                 localEndDate = localStartDate.plusDays(ChronoUnit.DAYS.between(repeat.getStartDate(), repeat.getStopDate()));
             }
-            tasks.add(new Task(repeat, localStartDate, localEndDate));
+            Task newTask = new Task(repeat, localStartDate, localEndDate);
+            tasks.add(newTask);
+            if (repeat.getPlanId() != null) {
+                addTaskToPlan(newTask, repeat.getPlanId());
+            }
             counterDate = counterDate.plusYears(repeat.getRepeatInterval());
         }
         return tasks;

@@ -9,6 +9,7 @@ import ru.sfu.db.repositories.PlanRepository;
 import ru.sfu.db.repositories.TaskPlanRepository;
 import ru.sfu.objects.CategoryDto;
 import ru.sfu.objects.PlanDto;
+import ru.sfu.objects.StorageSearchDto;
 import ru.sfu.objects.TaskDto;
 import ru.sfu.util.JsonUtil;
 
@@ -18,6 +19,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 //@Transactional
@@ -88,7 +91,7 @@ public class PlanService {
 
     public void updatePlanInTask(Plan plan, Task task) {
         System.out.println("Plan" + plan);
-        if (task.getPlan() == null) {
+        if (task.getPlan() == null && plan != null) {
             long step = getNumberOfTasksInPLan(plan) + 1;
             TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
             taskPlanRepository.save(taskPlan);
@@ -110,5 +113,34 @@ public class PlanService {
             TaskPlan taskPlan = new TaskPlan(new TaskPlanId(task.getId(), plan.getId()), task, plan, (int) step);
             taskPlanRepository.save(taskPlan);
         }
+    }
+
+    public List<Plan> filterForStorage(User user, StorageSearchDto searchDto) {
+        List<Predicate> predicates = new ArrayList<>();
+        Session session = getSession();
+        CriteriaQuery<Plan> cq = session.getCriteriaBuilder().createQuery(Plan.class);
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        Root<Plan> plan = cq.from(Plan.class);
+        predicates.add(criteriaBuilder.equal(plan.get("userId"), user));
+
+        if (searchDto.getText() != null) {
+            //predicates.add(criteriaBuilder.like(task.get("name"), "%" + text + "%"));
+            predicates.add(criteriaBuilder.or(criteriaBuilder.like(plan.get("name"), "%" + searchDto.getText() + "%"), criteriaBuilder.like(plan.get("details"), "%" + searchDto.getText() + "%")));
+        }
+
+        if (searchDto.getStartDate() != null) {
+            predicates.add(criteriaBuilder.or(criteriaBuilder.greaterThanOrEqualTo(plan.get("startDate"), searchDto.getStartDate()), criteriaBuilder.greaterThanOrEqualTo(plan.get("stopDate"), searchDto.getStartDate())));
+        }
+
+        if (searchDto.getStopDate() != null) {
+            predicates.add(criteriaBuilder.or(criteriaBuilder.lessThanOrEqualTo(plan.get("startDate"), searchDto.getStopDate()), criteriaBuilder.lessThanOrEqualTo(plan.get("stopDate"), searchDto.getStopDate())));
+        }
+
+        if (searchDto.getStatus() != null) {
+            predicates.add(criteriaBuilder.equal(plan.get("status"), searchDto.getStatus()));
+        }
+        Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+
+        return session.createQuery(cq.where(finalPredicate)).getResultList();
     }
 }

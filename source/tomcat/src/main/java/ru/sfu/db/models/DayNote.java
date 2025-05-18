@@ -26,7 +26,7 @@ public class DayNote {
     @Column(name = "assigned_day", nullable = false)
     private LocalDate day;
 
-    @NotBlank
+    //@NotBlank
     @Column(name = "note_text", nullable = false)
     private String text;
 

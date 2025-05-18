@@ -33,7 +33,7 @@ public class AuthApi {
     JwtTokenUtil jwtUtil;
     private final UserService userService;
 
-    //@PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid AuthRequestDto request) {
         try {
             Authentication authentication = authManager.authenticate(
@@ -52,15 +52,18 @@ public class AuthApi {
         }
     }
 
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public ResponseEntity<AuthResponseDto> authenticateUser(@Valid @RequestBody AuthRequestDto loginRequest) throws Exception {
-        try {
+        /**try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
         } catch (Exception ex) {
             throw new Exception("inavalid username/password");
-        }
+        }*/
+        authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+        );
         return ResponseEntity.ok().body(
                 new AuthResponseDto(jwtUtil.generateAccessToken(userService.findByEmail(loginRequest.getEmail())))
         );
