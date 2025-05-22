@@ -16,4 +16,7 @@ public interface CategoryRepository extends CrudRepository<Category, Long> {
     @Query("SELECT c FROM Category c WHERE c.userId = :user_id AND c.onWatch = true")
     List<Category> findCategoriesByUserIdAndOnWatchIsTrue(@Param("user_id") User user);
     List<Category> findCategoriesByUserIdAndOnWatch(User user, Boolean onWatch, Sort sort);
+
+    @Query("SELECT c FROM Category c WHERE c.userId = :user_id AND c.id IN :ids")
+    List<Category> findCategoriesByUserIdAndListOfIds(@Param("user_id") User user, @Param("ids") List<Long> ids);
 }

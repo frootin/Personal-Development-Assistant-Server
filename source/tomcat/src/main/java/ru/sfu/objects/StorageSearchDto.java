@@ -37,7 +37,7 @@ public class StorageSearchDto {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate doneStopDate;
 
-    private List<CategoryDto> categories;
+    private List<Long> categories;
     @JsonProperty("is_repeated")
     private Boolean isRepeated;
     @JsonProperty("belongs_to_plan")

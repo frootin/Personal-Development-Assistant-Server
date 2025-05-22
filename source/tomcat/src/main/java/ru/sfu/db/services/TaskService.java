@@ -199,10 +199,12 @@ public class TaskService {
 
         if (searchDto.getDoneStartDate() != null) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(task.get("doneByTmz"), searchDto.getDoneStartDate().atStartOfDay()));
+            predicates.add(criteriaBuilder.equal(task.get("status"), Task.DONE_STATUS));
         }
 
         if (searchDto.getDoneStopDate() != null) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(task.get("doneByTmz"), LocalDateTime.of(searchDto.getDoneStopDate(), LocalTime.MAX)));
+            predicates.add(criteriaBuilder.equal(task.get("status"), Task.DONE_STATUS));
         }
 
         if (searchDto.getMinPoints() != null) {
@@ -216,6 +218,26 @@ public class TaskService {
         if (searchDto.getStatus() != null) {
             predicates.add(criteriaBuilder.equal(task.get("status"), searchDto.getStatus()));
         }
+
+        if (searchDto.getIsRepeated() != null) {
+            if (searchDto.getIsRepeated()) predicates.add(criteriaBuilder.isNotNull(task.get("repeatId")));
+            else predicates.add(criteriaBuilder.isNull(task.get("repeatId")));
+        }
+
+        if (searchDto.getBelongsToPlan() != null) {
+            if (searchDto.getBelongsToPlan()) predicates.add(criteriaBuilder.isNotNull(task.get("plan")));
+            else predicates.add(criteriaBuilder.isNull(task.get("plan")));
+        }
+
+        if (searchDto.getCategories() != null) {
+            List<Category> categories = categoryRepository.findCategoriesByUserIdAndListOfIds(user, searchDto.getCategories());
+            CriteriaBuilder.In<Category> inClause = criteriaBuilder.in(task.get("categoryId"));
+            for (Category category : categories) {
+                inClause.value(category);
+            }
+            predicates.add(inClause);
+        }
+
         Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 
         return session.createQuery(cq.where(finalPredicate)).getResultList();
