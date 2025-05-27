@@ -181,6 +181,18 @@ CREATE TABLE IF NOT EXISTS public.diary_entries
        ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS public.bookmarks
+(
+   id bigserial PRIMARY KEY,
+   user_id bigint NOT NULL,
+   bookmark_name text NOT NULL,
+   bookmark_link text,
+   details text,
+   tags text[],
+   created_at timestamp without time zone,
+   updated_at timestamp without time zone
+)
+
 CREATE FUNCTION last_upd_trig() RETURNS trigger
    LANGUAGE plpgsql AS
 $$BEGIN

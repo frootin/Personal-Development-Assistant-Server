@@ -57,7 +57,7 @@ public class HomeJsonFormatter {
         assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
         if (task == null) return null;
-        //assert task != null;
+        task = taskService.save(task);
         if (taskDto.getReferId() != null) {
             Plan plan = planService.findById(taskDto.getReferId());
             long step = planService.getNumberOfTasksInPLan(plan) + 1;

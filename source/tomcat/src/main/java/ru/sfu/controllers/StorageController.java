@@ -22,6 +22,7 @@ public class StorageController {
     private final TaskService taskService;
     private final DayNoteService dayNoteService;
     private final DiaryEntryService diaryEntryService;
+    private final BookmarkService bookmarkService;
 
 
     @PostMapping
@@ -50,6 +51,11 @@ public class StorageController {
             }
             if (entityType.equals(EntityTypes.DIARY_ENTRY)) {
                 List<DiaryEntry> notes = diaryEntryService.filterForStorage(user,
+                        searchDto);
+                searchResultsDto.setDiary(JsonUtil.mapList(notes, DiaryEntryDto.class));
+            }
+            if (entityType.equals(EntityTypes.BOOKMARK)) {
+                List<Bookmark> notes = bookmarkService.filterForStorage(user,
                         searchDto);
                 searchResultsDto.setDiary(JsonUtil.mapList(notes, DiaryEntryDto.class));
             }
