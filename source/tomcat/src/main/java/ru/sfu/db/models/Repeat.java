@@ -76,6 +76,32 @@ public class Repeat {
     private Plan planId;
 
     public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd,
+                  int numberOfRepeats, Integer repeatInterval, Plan planId) {
+        this.name = task.getName();
+        this.details = task.getDetails();
+        this.categoryId = task.getCategoryId();
+        this.estimate = task.getEstimate();
+        this.userId= task.getUserId();
+        this.startDate = task.getStartDate();
+        this.stopDate = task.getStopDate();
+        this.startTime = task.getStartTime();
+        this.stopTime = task.getStopTime();
+        this.timezone = task.getTimezone();
+        if (task.getPlan() != null) {
+            this.planId = task.getPlan().getPlan();
+        }
+        if (planId != null) {
+            this.planId = planId;
+        }
+        this.repeatTerm = repeatTerm;
+        this.repeatDays = repeatDays;
+        this.repeatStart = repeatStart;
+        this.repeatEnd = repeatEnd;
+        this.numberOfRepeats = numberOfRepeats;
+        this.repeatInterval = repeatInterval;
+    }
+
+    public Repeat(Task task, String repeatTerm, int[] repeatDays, LocalDate repeatStart, LocalDate repeatEnd,
                   int numberOfRepeats, Integer repeatInterval) {
         this.name = task.getName();
         this.details = task.getDetails();
@@ -98,3 +124,5 @@ public class Repeat {
         this.repeatInterval = repeatInterval;
     }
 }
+
+

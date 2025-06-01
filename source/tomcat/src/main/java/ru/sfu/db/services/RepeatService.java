@@ -20,8 +20,10 @@ public class RepeatService {
     }
 
     public Repeat save(Repeat repeat) {
-        if (repeat.getRepeatEnd() != null & repeat.getRepeatStart().isAfter(repeat.getRepeatEnd())) {
-            return null;
+        if (repeat.getRepeatEnd() != null) {
+            if (repeat.getRepeatStart().isAfter(repeat.getRepeatEnd())) {
+                return null;
+            }
         }
         /**if (repeat.getStartDate().equals(repeat.getStopDate()) & repeat.getStartTime().isAfter(repeat.getStopTime())) return null;
         if (repeat.getEstimate() > 100) return null;*/

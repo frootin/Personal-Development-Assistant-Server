@@ -251,7 +251,7 @@ public class TaskService {
         LocalDate stopDate = repeat.getRepeatEnd();
         counterDate = counterDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         if (repeat.getNumberOfRepeats() > 0) {
-            Integer currentRepeatsNum = 1;
+            Integer currentRepeatsNum = 0;
             while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
                 for (int i: repeat.getRepeatDays()) {
                     if (currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
@@ -264,9 +264,6 @@ public class TaskService {
                     }
                     Task newTask = new Task(repeat, localStartDate, localEndDate);
                     tasks.add(newTask);
-                    if (repeat.getPlanId() != null) {
-                        addTaskToPlan(newTask, repeat.getPlanId());
-                    }
                     currentRepeatsNum++;
                 }
                 counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
@@ -285,9 +282,6 @@ public class TaskService {
                 }
                 Task newTask = new Task(repeat, localStartDate, localEndDate);
                 tasks.add(newTask);
-                if (repeat.getPlanId() != null) {
-                    addTaskToPlan(newTask, repeat.getPlanId());
-                }
             }
             counterDate = counterDate.plusDays(7L * repeat.getRepeatInterval());
         }
@@ -302,7 +296,7 @@ public class TaskService {
         LocalDate stopDate = repeat.getRepeatEnd();
         if (repeat.getNumberOfRepeats() > 0) {
             System.out.println(repeat.getNumberOfRepeats());
-            for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
+            for (int i = 0; i < repeat.getNumberOfRepeats(); i++) {
                 localStartDate = counterDate.plusDays(1);
                 localEndDate = null;
                 if (repeat.getStopDate() != null) {
@@ -310,9 +304,6 @@ public class TaskService {
                 }
                 Task newTask = new Task(repeat, localStartDate, localEndDate);
                 tasks.add(newTask);
-                if (repeat.getPlanId() != null) {
-                    addTaskToPlan(newTask, repeat.getPlanId());
-                }
             }
             return tasks;
         }
@@ -327,9 +318,6 @@ public class TaskService {
             }
             Task newTask = new Task(repeat, localStartDate, localEndDate);
             tasks.add(newTask);
-            if (repeat.getPlanId() != null) {
-                addTaskToPlan(newTask, repeat.getPlanId());
-            }
             counterDate = counterDate.plusDays(1);
         }
         return tasks;
@@ -342,7 +330,7 @@ public class TaskService {
         LocalDate counterDate = repeat.getRepeatStart();
         LocalDate stopDate = repeat.getRepeatEnd();
         if (repeat.getNumberOfRepeats() != 0) {
-            Integer currentRepeatsNum = 1;
+            Integer currentRepeatsNum = 0;
             while (!currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
                 for (int i: repeat.getRepeatDays()) {
                     if (currentRepeatsNum.equals(repeat.getNumberOfRepeats())) {
@@ -355,9 +343,6 @@ public class TaskService {
                     }
                     Task newTask = new Task(repeat, localStartDate, localEndDate);
                     tasks.add(newTask);
-                    if (repeat.getPlanId() != null) {
-                        addTaskToPlan(newTask, repeat.getPlanId());
-                    }
                     currentRepeatsNum++;
                 }
                 counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
@@ -376,9 +361,6 @@ public class TaskService {
                 }
                 Task newTask = new Task(repeat, localStartDate, localEndDate);
                 tasks.add(newTask);
-                if (repeat.getPlanId() != null) {
-                    addTaskToPlan(newTask, repeat.getPlanId());
-                }
             }
             counterDate = counterDate.plusMonths(repeat.getRepeatInterval());
         }
@@ -392,7 +374,7 @@ public class TaskService {
         LocalDate counterDate = repeat.getRepeatStart();
         LocalDate stopDate = repeat.getRepeatEnd();
         if (repeat.getNumberOfRepeats() != 0) {
-            for (int i = 1; i < repeat.getNumberOfRepeats(); i++) {
+            for (int i = 0; i < repeat.getNumberOfRepeats(); i++) {
                 localStartDate = counterDate.plusYears(repeat.getRepeatInterval());
                 localEndDate = null;
                 if (repeat.getStopDate() != null) {
@@ -400,9 +382,6 @@ public class TaskService {
                 }
                 Task newTask = new Task(repeat, localStartDate, localEndDate);
                 tasks.add(newTask);
-                if (repeat.getPlanId() != null) {
-                    addTaskToPlan(newTask, repeat.getPlanId());
-                }
             }
             return tasks;
         }
@@ -417,9 +396,6 @@ public class TaskService {
             }
             Task newTask = new Task(repeat, localStartDate, localEndDate);
             tasks.add(newTask);
-            if (repeat.getPlanId() != null) {
-                addTaskToPlan(newTask, repeat.getPlanId());
-            }
             counterDate = counterDate.plusYears(repeat.getRepeatInterval());
         }
         return tasks;
@@ -433,7 +409,15 @@ public class TaskService {
             case Repeat.MONTHLY -> tasks = createMonthlyRepeatTasks(repeat);
             case Repeat.YEARLY -> tasks = createYearlyRepeatTasks(repeat);
         }
-        repository.saveAll(tasks);
+        Iterable<Task> savedTasks = repository.saveAll(tasks);
+
+        if (repeat.getPlanId() != null) {
+            for (Task task: savedTasks) {
+                Plan plan = repeat.getPlanId();
+                long step = taskPlanRepository.countByPlan(plan);;
+                addTaskToPlan(task, plan, step);
+            }
+        }
     }
 
     @Transactional

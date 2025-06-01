@@ -57,24 +57,22 @@ public class HomeJsonFormatter {
         assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
         if (task == null) return null;
-        task = taskService.save(task);
-        if (taskDto.getReferId() != null) {
-            Plan plan = planService.findById(taskDto.getReferId());
-            long step = planService.getNumberOfTasksInPLan(plan) + 1;
-            taskService.addTaskToPlan(task, plan, step);
-        }
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
-                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval());
+                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
             repeat = repeatService.save(repeat);
-            //task.setRepeatId(repeat);
             taskService.createTasksForRepeat(repeat);
-            task = null;
+            return null;
         } else {
             task = taskService.save(task);
+            if (taskDto.getReferId() != null) {
+                Plan plan = planService.findById(taskDto.getReferId());
+                long step = planService.getNumberOfTasksInPLan(plan) + 1;
+                taskService.addTaskToPlan(task, plan, step);
+            }
+            return JsonUtil.ModelToDto(task, TaskWindowDto.class);
         }
-        return JsonUtil.ModelToDto(task, TaskWindowDto.class);
     }
 
     public static TaskWindowDto updateFromDetailedDto(TaskService taskService,
@@ -86,25 +84,27 @@ public class HomeJsonFormatter {
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
         assert task != null;
         Task savedTask = taskService.findById(task.getId());
-        task = taskService.save(task);
-        if (taskDto.getReferId() != null) {
-            Plan plan = planService.findById(taskDto.getReferId());
-            task = taskService.findById(task.getId());
-            planService.updatePlanInTask(plan, task);
-        } else {
-            task = taskService.findById(task.getId());
-            if (task.getPlan() == null) return JsonUtil.ModelToDto(task, TaskWindowDto.class);
-            planService.updatePlanInTask(null, task);
-        }
+
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
-                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval());
-            if (savedTask.getRepeatId() != repeat) {
+                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
+            if (savedTask.getRepeatId().getId() == repeatDto.getId()) {
                 repeat = repeatService.save(repeat);
                 task.setRepeatId(repeat);
                 taskService.deleteRepeatedTasks(task.getId(), DeleteRegimes.DELETE_ALL);
                 taskService.createTasksForRepeat(repeat);
+            }
+        } else {
+            task = taskService.save(task);
+            if (taskDto.getReferId() != null) {
+                Plan plan = planService.findById(taskDto.getReferId());
+                task = taskService.findById(task.getId());
+                planService.updatePlanInTask(plan, task);
+            } else {
+                task = taskService.findById(task.getId());
+                if (task.getPlan() == null) return JsonUtil.ModelToDto(task, TaskWindowDto.class);
+                planService.updatePlanInTask(null, task);
             }
         }
         return JsonUtil.ModelToDto(task, TaskWindowDto.class);
