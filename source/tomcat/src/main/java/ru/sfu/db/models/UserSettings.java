@@ -34,7 +34,7 @@ public class UserSettings {
 
     public UserSettings(User userId, String userTimezone) {
         this.userId = userId;
-        this.eventsTrackStartDate = null;
+        this.eventsTrackStartDate = LocalDate.of(2025, 1, 1);
         this.eventsTrackWeeksNum = 2;
         this.userTimezone = userTimezone;
         this.weekStartDay = "Monday";
@@ -43,15 +43,15 @@ public class UserSettings {
 
     public UserSettings(String userTimezone) {
         //this.userId = userId;
-        this.eventsTrackStartDate = null;
+        this.eventsTrackStartDate = LocalDate.of(2025, 1, 1);
         this.eventsTrackWeeksNum = 2;
         this.userTimezone = userTimezone;
         this.weekStartDay = "Monday";
         this.showEventSchedule = true;
     }
 
-    @Override
+    /**@Override
     public int hashCode() {
         return 42;
-    }
+    }*/
 }

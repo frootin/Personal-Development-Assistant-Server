@@ -38,6 +38,7 @@ public class PlanController {
     @PostMapping
     public PlanDto createPLan(@RequestBody JsonNode json) {
         Plan plan = planService.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+        plan.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(plan, PlanDto.class);
     }
 
@@ -59,7 +60,7 @@ public class PlanController {
 
     @GetMapping
     public List<PlanDto> getPlans() {
-        List<Plan> plans = planService.getPlansForUser(userService.findById(1L));
+        List<Plan> plans = planService.getPlansForUser(userService.getCurrentUser());
         ModelMapper modelMapper = new ModelMapper();
         TypeMap<Plan, PlanDto> propertyMapper = modelMapper.createTypeMap(Plan.class, PlanDto.class);
         propertyMapper.addMappings(mapper -> mapper.skip(PlanDto::setTasks));
@@ -72,9 +73,9 @@ public class PlanController {
         List<PlanDto> activeDtos = new ArrayList<>();
         List<Plan> plans;
         if (status != null) {
-            plans = planService.getFullPlansForUserByStatus(userService.findById(1L), status.intValue());
+            plans = planService.getFullPlansForUserByStatus(userService.getCurrentUser(), status.intValue());
         } else {
-            plans = planService.getFullPlansForUser(userService.findById(1L));
+            plans = planService.getFullPlansForUser(userService.getCurrentUser());
         }
         for (Plan plan: plans) {
             activeDtos.add(planService.getFullDtoFromPlan(plan, taskService));
@@ -85,7 +86,7 @@ public class PlanController {
     @GetMapping("full/active")
     public List<PlanDto> getFullActive() {
         List<PlanDto> activeDtos = new ArrayList<>();
-        for (Plan plan: planService.getFullPlansForUserByStatus(userService.findById(1L), Plan.NOT_DONE_STATUS)) {
+        for (Plan plan: planService.getFullPlansForUserByStatus(userService.getCurrentUser(), Plan.NOT_DONE_STATUS)) {
             activeDtos.add(planService.getFullDtoFromPlan(plan, taskService));
         }
         return activeDtos;
@@ -94,7 +95,7 @@ public class PlanController {
     @GetMapping("full/archive")
     public List<PlanDto> getFullArchive() {
         List<PlanDto> archiveDtos = new ArrayList<>();
-        for (Plan plan: planService.getFullPlansForUserByStatus(userService.findById(1L), Plan.DONE_STATUS)) {
+        for (Plan plan: planService.getFullPlansForUserByStatus(userService.getCurrentUser(), Plan.DONE_STATUS)) {
             archiveDtos.add(planService.getFullDtoFromPlan(plan, taskService));
         }
         return archiveDtos;
@@ -103,6 +104,7 @@ public class PlanController {
     @PutMapping
     public PlanDto updatePLan(@RequestBody JsonNode json) {
         Plan plan = planService.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+        plan.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(plan, PlanDto.class);
     }
 

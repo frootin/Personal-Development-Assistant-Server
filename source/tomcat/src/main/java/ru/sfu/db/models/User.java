@@ -1,28 +1,32 @@
 package ru.sfu.db.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 
+@ToString
 @Entity
-@Data
+@Builder
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    @Column(nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
     @NotBlank
     @Column(nullable = false)
@@ -43,6 +47,14 @@ public class User implements UserDetails {
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL, mappedBy="userId", orphanRemoval = true)
     private UserSettings settings;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 
     public User(String email, String username, String password, String displayName, String userpic, String interests) {
         this.email = email;
@@ -51,6 +63,7 @@ public class User implements UserDetails {
         this.displayName = displayName;
         this.userpic = userpic;
         this.interests = interests;
+        this.role = Role.ROLE_USER;
         //this.createdAt = createdAt;
     }
 
@@ -63,10 +76,6 @@ public class User implements UserDetails {
         return 42;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
 
     @Override
     public String getPassword() {

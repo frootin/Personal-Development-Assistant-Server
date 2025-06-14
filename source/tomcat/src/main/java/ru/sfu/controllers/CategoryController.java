@@ -27,18 +27,19 @@ public class CategoryController {
         assert category != null;
         System.out.println(category.getUserId());
         System.out.println(category);
+        category.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(categoryService.save(category), CategoryDto.class);
     }
 
     @GetMapping
     public List<CategoryDto> getAllCategories() {
-        List<Category> categories = categoryService.getCategoriesForUser(userService.findById(1L));
+        List<Category> categories = categoryService.getCategoriesForUser(userService.getCurrentUser());
         return JsonUtil.mapList(categories, CategoryDto.class);
     }
 
     @GetMapping("/active")
     public List<CategoryDto> getActiveCategories() {
-        List<Category> categories = categoryService.getActiveCategoriesForUser(userService.findById(1L));
+        List<Category> categories = categoryService.getActiveCategoriesForUser(userService.getCurrentUser());
         return JsonUtil.mapList(categories, CategoryDto.class);
     }
 
@@ -46,6 +47,7 @@ public class CategoryController {
     public CategoryDto updateCategory(@RequestBody JsonNode json) {
         Category category = JsonUtil.JsonToSingleModel(json, CategoryDto.class, Category.class);
         assert category != null;
+        category.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(categoryService.save(category), CategoryDto.class);
     }
 }

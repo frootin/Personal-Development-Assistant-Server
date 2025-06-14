@@ -52,11 +52,13 @@ public class HomeJsonFormatter {
     public static TaskWindowDto saveFromDetailedDto(TaskService taskService,
                                              PlanService planService,
                                              RepeatService repeatService,
+                                             UserService userService,
                                              JsonNode json) {
         TaskWindowDto taskDto = JsonUtil.JsonToDto(json, TaskWindowDto.class);
         assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
         if (task == null) return null;
+        task.setUserId(userService.getCurrentUser());
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
@@ -78,11 +80,13 @@ public class HomeJsonFormatter {
     public static TaskWindowDto updateFromDetailedDto(TaskService taskService,
                                                     PlanService planService,
                                                     RepeatService repeatService,
+                                                      UserService userService,
                                                     JsonNode json) throws NoSuchTaskException {
         TaskWindowDto taskDto = JsonUtil.JsonToDto(json, TaskWindowDto.class);
         assert taskDto != null;
         Task task = JsonUtil.JsonToSingleModel(json, TaskWindowDto.class, Task.class);
         assert task != null;
+        task.setUserId(userService.getCurrentUser());
         Task savedTask = taskService.findById(task.getId());
 
         if (taskDto.getRepeat() != null) {

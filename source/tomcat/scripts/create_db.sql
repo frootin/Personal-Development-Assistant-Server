@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.users
     display_name varchar NOT NULL,
     userpic varchar,
     interests varchar,
+    role varchar,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -191,7 +192,7 @@ CREATE TABLE IF NOT EXISTS public.bookmarks
    tags text[],
    created_at timestamp without time zone,
    updated_at timestamp without time zone
-)
+);
 
 CREATE FUNCTION last_upd_trig() RETURNS trigger
    LANGUAGE plpgsql AS

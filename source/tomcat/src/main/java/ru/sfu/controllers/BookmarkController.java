@@ -22,7 +22,7 @@ public class BookmarkController {
 
     @GetMapping
     public List<BookmarkDto> getEntries() {
-        return JsonUtil.mapList(bookmarkService.getAllEntries(userService.findById(1L)), BookmarkDto.class);
+        return JsonUtil.mapList(bookmarkService.getAllEntries(userService.getCurrentUser()), BookmarkDto.class);
     }
 
     @GetMapping("{id}")

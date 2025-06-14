@@ -36,7 +36,7 @@ public class ApiController {
                                            @PathVariable String month,
                                            @PathVariable String day) {
         LocalDate centeredDate = DatetimeStringFormatter.getDateFromYearMonthDay(year, month, day);
-        User curUser = userService.findById(1L);
+        User curUser = userService.findById(userService.getCurrentUser().getId());
         return HomeJsonFormatter.getHomeDtoFromRepositories(taskService, eventService, dayNoteService, curUser, centeredDate);
     }
 
@@ -45,7 +45,7 @@ public class ApiController {
     public List<TaskWindowDto> getFiltered(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String details,
                                            @RequestParam(required = false) Integer status) {
-        User curUser = userService.findById(1L);
+        User curUser = userService.getCurrentUser();
         return JsonUtil.mapList(taskService.filterByFields(curUser, name, details, status), TaskWindowDto.class);
     }
 }

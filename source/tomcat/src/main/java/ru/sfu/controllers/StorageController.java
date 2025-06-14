@@ -27,7 +27,7 @@ public class StorageController {
 
     @PostMapping
     public SearchResultsDto search(@RequestBody StorageSearchDto searchDto) {
-        User user = userService.findById(1L);
+        User user = userService.getCurrentUser();
         SearchResultsDto searchResultsDto = new SearchResultsDto();
         for (String entityType: searchDto.getEntityTypes()) {
             if (entityType.equals(EntityTypes.TASK)) {

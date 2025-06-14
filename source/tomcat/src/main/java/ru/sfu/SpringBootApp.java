@@ -34,10 +34,10 @@ public class SpringBootApp {
         return obj;
     }
 
-    @Bean
+    /**@Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 
     /**
     @Bean

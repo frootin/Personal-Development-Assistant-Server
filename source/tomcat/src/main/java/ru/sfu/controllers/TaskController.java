@@ -36,7 +36,7 @@ public class TaskController {
 
     @PostMapping
     public TaskWindowDto createTask(@RequestBody JsonNode json) {
-        return HomeJsonFormatter.saveFromDetailedDto(taskService, planService, repeatService, json);
+        return HomeJsonFormatter.saveFromDetailedDto(taskService, planService, repeatService, userService, json);
     }
 
     @GetMapping("{id}")
@@ -55,7 +55,7 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<TaskWindowDto>> getTasks() {
-        List<Task> tasks = taskService.getTasksForUser(userService.findById(1L));
+        List<Task> tasks = taskService.getTasksForUser(userService.getCurrentUser());
         List<TaskWindowDto> dtoTasks = JsonUtil.mapList(tasks,TaskWindowDto.class);
         //ResponseEntity.status()
         return ResponseEntity.ok(dtoTasks);
@@ -63,7 +63,7 @@ public class TaskController {
 
     @PutMapping
     public TaskWindowDto updateTask(@RequestBody JsonNode json) throws NoSuchTaskException {
-        return HomeJsonFormatter.updateFromDetailedDto(taskService, planService, repeatService, json);
+        return HomeJsonFormatter.updateFromDetailedDto(taskService, planService, repeatService, userService, json);
     }
 
     @DeleteMapping("/{id}")

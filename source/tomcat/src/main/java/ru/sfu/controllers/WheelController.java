@@ -23,13 +23,13 @@ public class WheelController {
     public List<WheelCategoryDto> getWheelForDates(@RequestBody JsonNode json) {
         LocalDate startDate = JsonUtil.getDateFromJson(json, "start_date");
         LocalDate endDate = JsonUtil.getDateFromJson(json, "end_date");
-        return wheelService.getPointsForCategories(userService.findById(1L), startDate, endDate);
+        return wheelService.getPointsForCategories(userService.getCurrentUser(), startDate, endDate);
     }
 
     @PostMapping
     public List<WheelCategoryDto> getWheelForDatesPost(@RequestBody JsonNode json) {
         LocalDate startDate = JsonUtil.getDateFromJson(json, "start_date");
         LocalDate endDate = JsonUtil.getDateFromJson(json, "end_date");
-        return wheelService.getPointsForCategories(userService.findById(1L), startDate, endDate);
+        return wheelService.getPointsForCategories(userService.getCurrentUser(), startDate, endDate);
     }
 }

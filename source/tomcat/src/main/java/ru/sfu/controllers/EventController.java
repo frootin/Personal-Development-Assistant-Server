@@ -25,7 +25,7 @@ public class EventController {
 
     @GetMapping
     public ScheduleDto getSchedule() {
-        User curUser = userService.findById(1L);
+        User curUser = userService.getCurrentUser();
         List<Event> events = eventService.getSchedule(curUser);
         ScheduleDto scheduleDto = new ScheduleDto();
         scheduleDto.setNumberOfWeeks(curUser.getSettings().getEventsTrackWeeksNum());
@@ -42,12 +42,14 @@ public class EventController {
     @PostMapping
     public EventDetailsDto createEvent(@RequestBody JsonNode json) {
         Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        event.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
     @PutMapping
     public EventDetailsDto updateEvent(@RequestBody JsonNode json) {
         Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        event.setUserId(userService.getCurrentUser());
         return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
