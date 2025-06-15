@@ -20,15 +20,19 @@ public class DayNoteController {
 
     @PostMapping
     public DayNoteDto createNote(@RequestBody JsonNode json) {
-        DayNote note = dayNoteService.save(JsonUtil.JsonToSingleModel(json, DayNoteDto.class, DayNote.class));
+        DayNote note = JsonUtil.JsonToSingleModel(json, DayNoteDto.class, DayNote.class);
+        if (note == null) return null;
         note.setUserId(userService.getCurrentUser());
+        note = dayNoteService.save(note);
         return JsonUtil.ModelToDto(note, DayNoteDto.class);
     }
 
     @PutMapping
     public DayNoteDto updateNote(@RequestBody JsonNode json) {
-        DayNote note = dayNoteService.save(JsonUtil.JsonToSingleModel(json, DayNoteDto.class, DayNote.class));
+        DayNote note = JsonUtil.JsonToSingleModel(json, DayNoteDto.class, DayNote.class);
+        if (note == null) return null;
         note.setUserId(userService.getCurrentUser());
+        note = dayNoteService.save(note);
         return JsonUtil.ModelToDto(note, DayNoteDto.class);
     }
 }
