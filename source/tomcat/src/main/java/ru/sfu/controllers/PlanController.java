@@ -37,8 +37,10 @@ public class PlanController {
     
     @PostMapping
     public PlanDto createPLan(@RequestBody JsonNode json) {
-        Plan plan = planService.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+        Plan plan = JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class);
+        if (plan == null) return null;
         plan.setUserId(userService.getCurrentUser());
+        plan = planService.save(plan);
         return JsonUtil.ModelToDto(plan, PlanDto.class);
     }
 
@@ -103,8 +105,10 @@ public class PlanController {
 
     @PutMapping
     public PlanDto updatePLan(@RequestBody JsonNode json) {
-        Plan plan = planService.save(JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class));
+        Plan plan = JsonUtil.JsonToSingleModel(json, PlanDto.class, Plan.class);
+        if (plan == null) return null;
         plan.setUserId(userService.getCurrentUser());
+        plan = planService.save(plan);
         return JsonUtil.ModelToDto(plan, PlanDto.class);
     }
 

@@ -81,7 +81,7 @@ public class Repeat {
         this.details = task.getDetails();
         this.categoryId = task.getCategoryId();
         this.estimate = task.getEstimate();
-        this.userId= task.getUserId();
+        this.userId = task.getUserId();
         this.startDate = task.getStartDate();
         this.stopDate = task.getStopDate();
         this.startTime = task.getStartTime();
@@ -107,7 +107,7 @@ public class Repeat {
         this.details = task.getDetails();
         this.categoryId = task.getCategoryId();
         this.estimate = task.getEstimate();
-        this.userId= task.getUserId();
+        this.userId = task.getUserId();
         this.startDate = task.getStartDate();
         this.stopDate = task.getStopDate();
         this.startTime = task.getStartTime();

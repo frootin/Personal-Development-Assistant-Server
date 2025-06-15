@@ -32,17 +32,19 @@ public class DiaryEntryController {
 
     @PostMapping
     public DiaryEntryDto createEntry(@RequestBody JsonNode json) throws EmptyDiaryEntryException {
-        DiaryEntry note = diaryEntryService.save(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
+        DiaryEntry note = JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class);
         if (note == null) return null;
         note.setUserId(userService.getCurrentUser());
+        note = diaryEntryService.save(note);
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
     }
 
     @PutMapping
     public DiaryEntryDto updateEntry(@RequestBody JsonNode json) {
-        DiaryEntry note = diaryEntryService.updateOrInsert(JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class));
+        DiaryEntry note = JsonUtil.JsonToSingleModel(json, DiaryEntryDto.class, DiaryEntry.class);
         if (note == null) return null;
         note.setUserId(userService.getCurrentUser());
+        note = diaryEntryService.updateOrInsert(note);
         return JsonUtil.ModelToDto(note, DiaryEntryDto.class);
     }
 }

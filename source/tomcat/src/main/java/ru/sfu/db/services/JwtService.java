@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import ru.sfu.db.models.User;
 
 import java.security.Key;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,9 +81,15 @@ public class JwtService {
      * @return токен
      */
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                //.subject(userDetails.getUsername())
+                //.claims(extraClaims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                //.issuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(2030, Calendar.JANUARY, 1))
+                //.expiration(new Date(2030, Calendar.JANUARY, 1))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 

@@ -41,15 +41,17 @@ public class EventController {
 
     @PostMapping
     public EventDetailsDto createEvent(@RequestBody JsonNode json) {
-        Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        Event event = JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class);
         event.setUserId(userService.getCurrentUser());
+        event = eventService.save(event);
         return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
     @PutMapping
     public EventDetailsDto updateEvent(@RequestBody JsonNode json) {
-        Event event = eventService.save(JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class));
+        Event event = JsonUtil.JsonToSingleModel(json, EventDetailsDto.class, Event.class);
         event.setUserId(userService.getCurrentUser());
+        event = eventService.save(event);
         return JsonUtil.ModelToDto(event, EventDetailsDto.class);
     }
 
