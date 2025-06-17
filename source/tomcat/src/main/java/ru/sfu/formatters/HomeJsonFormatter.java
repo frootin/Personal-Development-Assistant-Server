@@ -62,7 +62,12 @@ public class HomeJsonFormatter {
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
-                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
+                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval());
+
+            if (taskDto.getReferId() != null) {
+                repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
+                        repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
+            }
             repeat = repeatService.save(repeat);
             taskService.createTasksForRepeat(repeat);
             return null;
@@ -92,7 +97,12 @@ public class HomeJsonFormatter {
         if (taskDto.getRepeat() != null) {
             RepeatDto repeatDto = taskDto.getRepeat();
             Repeat repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
-                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
+                    repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval());
+
+            if (taskDto.getReferId() != null) {
+                repeat = new Repeat(task, repeatDto.getTerm(), repeatDto.getDays(), repeatDto.getRepeatStart(),
+                        repeatDto.getRepeatEnd(), repeatDto.getNumberOfRepeats(), repeatDto.getRepeatInterval(), planService.findById(taskDto.getReferId()));
+            }
             if (savedTask.getRepeatId().getId() == repeatDto.getId()) {
                 repeat = repeatService.save(repeat);
                 task.setRepeatId(repeat);
