@@ -22,11 +22,13 @@ public class DiaryEntryController {
 
     @GetMapping
     public List<DiaryEntryDto> getEntries() {
+        System.out.println(JsonUtil.mapList(diaryEntryService.getAllEntries(userService.getCurrentUser()), DiaryEntryDto.class));
         return JsonUtil.mapList(diaryEntryService.getAllEntries(userService.getCurrentUser()), DiaryEntryDto.class);
     }
 
     @GetMapping("{id}")
     public DiaryEntryDto getEntryById(@PathVariable long id) {
+        System.out.println(JsonUtil.ModelToDto(diaryEntryService.findById(id), DiaryEntryDto.class));
         return JsonUtil.ModelToDto(diaryEntryService.findById(id), DiaryEntryDto.class);
     }
 

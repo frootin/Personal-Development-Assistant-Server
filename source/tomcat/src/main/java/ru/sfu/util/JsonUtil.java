@@ -13,6 +13,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.PropertyMap;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.jackson2.SimpleGrantedAuthorityMixin;
 import ru.sfu.objects.TaskWindowDto;
 
 import java.text.SimpleDateFormat;
@@ -103,6 +106,7 @@ public class JsonUtil {
 
     public static <S> S applyPatch(JsonPatch patch, S targetCustomer, Class<S> targetClass) throws JsonPatchException, JsonProcessingException {
         ObjectMapper objectMapper = getConfiguredObjectMapper();
+        //objectMapper.addMixIn(GrantedAuthority.class, SimpleGrantedAuthorityMixin.class);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.setVisibility(VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         JsonNode patched = patch.apply(objectMapper.convertValue(targetCustomer, JsonNode.class));
